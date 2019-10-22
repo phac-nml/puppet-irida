@@ -7,11 +7,12 @@
 class irida::web_server (
   String $irida_ip_addr = $ipaddress
 ) {
+  ensure_resource('package', 'epel-release', {'ensure' => 'present'})
 
-
-  ensure_packages ( 'httpd',{'ensure' => 'present',
-  require => Package['epel-release']})
-
+  package { 'httpd':
+    ensure  => 'present',
+    require => Package['epel-release']
+  }
 
   file { 'httpd_irida.conf':
     ensure  => 'present',
