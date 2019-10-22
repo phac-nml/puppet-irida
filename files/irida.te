@@ -1,0 +1,17 @@
+
+module irida 1.0;
+
+require {
+	type tomcat_t;
+	type user_home_t;
+        type usr_t;
+	type nfs_t;
+	class dir { search write add_name create open setattr getattr remove_name read rmdir rename};
+	class file { search write add_name create open setattr getattr read unlink };
+}
+
+#============= tomcat_t ==============
+allow tomcat_t nfs_t:dir { search write add_name create open setattr getattr remove_name read rmdir rename };
+allow tomcat_t nfs_t:file { search write add_name create open setattr getattr read unlink };
+allow tomcat_t user_home_t:dir search;
+allow tomcat_t usr_t:dir create;
