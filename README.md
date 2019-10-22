@@ -1,4 +1,4 @@
-# IRIDA BETA!
+# IRIDA
 
 
 #### Table of Contents
@@ -14,29 +14,22 @@
 
 ## Description
 
-Installation of IRIDA web application 
+The IRIDA module lets you use Puppet to install, deploy, and configure IRIDA web server (Alpha status)
 
 ## Setup
 
-### What irida affects **OPTIONAL**
+### Setup Requirements
 
-If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
-
-If there's more that they should know about, though, this is the place to mention:
-
-* Files, packages, services, or operations that the module will alter, impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
-
-### Setup Requirements **OPTIONAL**
-
-If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here.
-
-If your most recent release breaks compatibility or requires particular steps for upgrading, you might want to include an additional "Upgrading" section here.
+The IRIDA module requires [puppetlabs-stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) version 4.0 or newer, [puppetlabs-tomcat](https://forge.puppet.com/puppetlabs/tomcat) version 3.1 or newer , [puppetlabs-mysql](https://forge.puppet.com/puppetlabs/mysql) version 5.4 or newer and [crayfishx-firewalld](https://forge.puppet.com/crayfishx/firewalld)  version 3.4.0 or newer.
 
 ### Beginning with irida
 
-The very basic steps needed for a user to get the module up and running. This can include setup steps, if necessary, or it can be an example of the most basic use of the module.
+The simplest way to get IRIDA up and running with the IRIDA module is to run without any argument for installation
+
+```puppet
+include '::irida'
+```
+
 
 ## Usage
 
@@ -77,6 +70,3 @@ In the Limitations section, list any incompatibilities, known issues, or other w
 
 In the Development section, tell other users the ground rules for contributing to your project and how they should submit their work.
 
-## Release Notes/Contributors/Etc. **Optional**
-
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You can also add any additional sections you feel are necessary or important to include here. Please use the `## ` header.
