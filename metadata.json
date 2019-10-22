@@ -1,10 +1,10 @@
 {
-  "name": "PHAC-irida",
+  "name": "puppet-irida",
   "version": "0.1.0",
   "author": "Philip Mabon",
-  "summary": "",
+  "summary": "Installation of IRIDA web server",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/phac-nml/puppet-irida/",
   "dependencies": [
 
   ],
@@ -16,21 +16,9 @@
       ]
     },
     {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "8"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "7"
       ]
     }
   ],
