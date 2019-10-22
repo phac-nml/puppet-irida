@@ -18,11 +18,13 @@ class irida(
   Integer $file_processing_max = 8,
   Integer $file_process_queue_capacity = 512,
 
+  Boolean $nfs_based = false,
   String $data_directory = '/opt/data',
   String $sequence_directory = "${data_directory}/sequence",
   String $reference_directory = "${data_directory}/reference",
   String $output_directory = "${data_directory}/output",
   String $profile = 'prod',
+
 
   String $galaxy_execution_url= 'http://usegalaxy.org',
   String $galaxy_execution_apikey= 'changemetorealapikey',
@@ -67,7 +69,9 @@ class irida(
 
   include irida::security
   include irida::database
-  include irida::web_server
+  class {'irida::web_server':
+    irida_ip_addr => $irida::irida_ip_addr
+  }
 
   if $manage_user {
     user { $tomcat_user:
@@ -169,50 +173,51 @@ class irida(
     notify  => Service['tomcat.service'],
   }
 
-  exec {'irida directories':
-    command  => "mkdir -p ${irida::data_directory};
-    mkdir -p ${irida::reference_directory};
-    mkdir -p ${irida::sequence_directory};
-    mkdir -p ${irida::output_directory};",
-    provider => 'shell',
-    creates  => $irida::data_directory,
-    user     => $irida::tomcat_user,
-    require  => [Tomcat::Install['tomcat'],Tomcat::War['irida.war'],User[$tomcat_user]]
+  if $nfs_based {
+    exec {'irida directories':
+      command  => "mkdir -p ${irida::data_directory};
+      mkdir -p ${irida::reference_directory};
+      mkdir -p ${irida::sequence_directory};
+      mkdir -p ${irida::output_directory};",
+      provider => 'shell',
+      creates  => $irida::data_directory,
+      user     => $irida::tomcat_user,
+      require  => [Tomcat::Install['tomcat'],Tomcat::War['irida.war'],User[$tomcat_user]]
+    }
   }
+  else {
+    file { 'irida data':
+      ensure  => 'directory',
+      path    => $irida::data_directory,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => [Tomcat::Install['tomcat'],Tomcat::War['irida.war']]
+    }
 
+    file { 'irida ref':
+      ensure  => 'directory',
+      path    => $irida::reference_directory,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => File[$irida::data_directory]
+    }
 
-  # file { 'irida data':
-  #   ensure  => 'directory',
-  #   path    => $irida::data_directory,
-  #   owner   => $tomcat_user,
-  #   group   => $tomcat_group,
-  #   require => [Tomcat::Install['tomcat'],Tomcat::War['irida.war']]
-  # }
+    file { 'irida sequence':
+      ensure  => 'directory',
+      path    => $irida::sequence_directory,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => File[$irida::data_directory]
+    }
 
-  # file { 'irida ref':
-  #   ensure  => 'directory',
-  #   path    => $irida::reference_directory,
-  #   owner   => $tomcat_user,
-  #   group   => $tomcat_group,
-  #   require => File[$irida::data_directory]
-  # }
-
-  # file { 'irida sequence':
-  #   ensure  => 'directory',
-  #   path    => $irida::sequence_directory,
-  #   owner   => $tomcat_user,
-  #   group   => $tomcat_group,
-  #   require => File[$irida::data_directory]
-  # }
-
-  # file { 'irida output':
-  #   ensure  => 'directory',
-  #   path    => $irida::output_directory,
-  #   owner   => $tomcat_user,
-  #   group   => $tomcat_group,
-  #   require => File[$irida::data_directory]
-  # }
-
+    file { 'irida output':
+      ensure  => 'directory',
+      path    => $irida::output_directory,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => File[$irida::data_directory]
+    }
+  }
 
   file { [ '/var/cache/tomcat',
     '/var/lib/tomcat/webapps',

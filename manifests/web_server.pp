@@ -1,11 +1,18 @@
-#web server
-class irida::web_server {
+# @summary Installation of front end for IRIDA using httpd
+#
+# Installation of httpd with specific configuration for IRIDA
+#
+# @example
+#   include irida::web_server
+class irida::web_server (
+  String $irida_ip_addr = $ipaddress
+) {
 
 
   ensure_packages ( 'httpd',{'ensure' => 'present',
   require => Package['epel-release']})
 
-  $irida_ip_addr = $irida::irida_ip_addr
+
   file { 'httpd_irida.conf':
     ensure  => 'present',
     content => template('irida/ngs.conf.erb'),
