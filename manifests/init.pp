@@ -68,7 +68,14 @@ class irida(
   require => Package['epel-release']})
 
   include irida::security
-  include irida::database
+
+  class {'irida::database':
+    db_user     => $irida::db_user,
+    db_name     => $irida::db_name,
+    db_password => $irida::db_password,
+    db_host     => $irida::db_host,
+
+  }
   class {'irida::web_server':
     irida_ip_addr => $irida::irida_ip_addr
   }

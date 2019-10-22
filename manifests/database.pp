@@ -1,11 +1,19 @@
 #Database management for IRIDA
-class irida::database {
+class irida::database (
+  Boolean $make_db = true,
+  String $db_user = 'irida',
+  String $db_name = 'irida',
+  String $db_password = 'irida',
+  String $db_host = '127.0.0.1',
+){
 
+  if $make_db {
+    ensure_resource('package', 'epel-release', {'ensure' => 'present'})
 
-  if $irida::make_db {
-    ensure_packages ( [ 'mariadb-server'],{'ensure' => 'present',
-    require => Package['epel-release']})
-
+    package { 'mariadb-server':
+      ensure  => 'present',
+      require => Package['epel-release']
+    }
 
     service {'mariadb.service':
       ensure  => running,
@@ -14,10 +22,10 @@ class irida::database {
     }
 
     mysql::db { 'Create Database':
-        user     => $irida::db_user,
-        password => $irida::db_password,
-        dbname   => $irida::db_name,
-        host     => $irida::db_host,
+        user     => $db_user,
+        password => $db_password,
+        dbname   => $db_name,
+        host     => $db_host,
         require  => Service['mariadb.service'],
     }
 
