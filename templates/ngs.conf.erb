@@ -15,14 +15,9 @@
 	ProxyPassReverse	/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 	ProxyPreserveHost 	On
 
-	# this *used* to redirect permanent to /irida-ui/, but we changed the war
-	# file name to be irida.war (and only one war file), so we're going to
-	# tell apache to rewrite requests for /irida-ui/ because client browsers
-	# are caching the old redirect
-	RedirectMatch Permanent ^/$ http://<%= @irida_ip_addr %>/irida/
-
-	RewriteEngine on
-	RewriteRule ^/irida-ui/(.*) /irida/$1 [R,L]
+	<Location />
+	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
+	</Location>
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):

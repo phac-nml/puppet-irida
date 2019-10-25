@@ -4,7 +4,7 @@ class irida(
   String $tomcat_group = 'tomcat',
   Boolean $manage_user = true,
   String $tomcat_tmp = '/var/cache/tomcat/temp',
-  String $irida_ip_addr = $ipaddress,
+  String $irida_ip_addr = 'localhost',
   String $irida_version='19.09.1', #release tags  https://github.com/phac-nml/irida/releases
 
   Boolean $make_db = true,
