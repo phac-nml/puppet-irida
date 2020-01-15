@@ -70,6 +70,7 @@ class irida(
   include irida::security
 
   class {'irida::database':
+    make_db     => $irida::make_db,
     db_user     => $irida::db_user,
     db_name     => $irida::db_name,
     db_password => $irida::db_password,
