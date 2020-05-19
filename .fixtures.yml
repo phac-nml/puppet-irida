@@ -6,4 +6,4 @@ fixtures:
      stdlib: "puppetlabs/stdlib"
      mysql: "puppetlabs/mysql" 
      tomcat: "puppetlabs/tomcat"
-     firewalld: "puppetlabs/firewalld"
+     firewalld: "puppet/firewalld"
