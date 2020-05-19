@@ -1,0 +1,54 @@
+# The externally visible URL for accessing this instance of IRIDA. This key is
+# used by the e-mailer when sending out e-mail notifications (password resets,
+# for example) and embeds this URL directly in the body of the e-mail.
+server.base.url=http://<%= @irida_ip_addr %>
+
+# Mail server configuration settings
+mail.server.host=<%= @mail_server_host %>
+mail.server.protocol=<%= @mail_server_protocol %>
+mail.server.email=<%= @mail_server_email %>
+mail.server.username=<%= @mail_server_username %>
+
+# Location of the IRIDA Platform updates file
+<% if @updates_file == ''%>
+# updates.file=/etc/irida/updates.md
+<% else %>
+updates.file= <%= @updates_file %>
+<% end %>
+
+# The title and link for an external help resource. Uncomment these
+# and modify to have your own link rendered in the 'Help' menu. If these
+# are left commented out, no link appears under the 'Help' menu.
+<% if @help_page_title !='' and @help_page_url != '' %>
+help.page.title=<%= @help_page_title %>
+help.page.url=<%= @help_page_url%>
+<% else %>
+# help.page.title=Your Help Page Title
+# help.page.url=http://www.example.org/help
+<% end %>
+
+# The e-mail address for contacting an administrator for help. Uncomment
+# this and modify to have your own e-mail address rendered in the 'Help' menu.
+# If this is left commented out, no contact e-mail appears in the 'Help' menu.
+<% if @help_contact_email == '' %>
+# help.contact.email=
+<% else%>
+help.contact.email= <%= @help_contact_email %>
+<% end %>
+
+
+# This value may be un-commented and edited to display a dismissable warning
+# above all analysis results and metadata pages.
+<% if @irida_analysis_warning == '' %>
+# irida.analysis.warning=Note: These results may be preliminiary
+<% else %>
+irida.analysis.warning=<%= @irida_analysis_warning %>
+<% end %>
+
+# Comma separated locales enabled for IRIDA.  Currently only the English 'en'
+# locale is fully internationalized, and it is enabled by default.
+# locales.enabled=en
+
+# Default locale to display before a user is logged in.  Currently only the English 'en'
+# locale is fully internationalized, and it is enabled by default.
+# locales.default=en
