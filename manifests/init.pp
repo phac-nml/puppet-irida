@@ -5,7 +5,7 @@ class irida(
   Boolean $manage_user = true,
   String $tomcat_tmp = '/var/cache/tomcat/temp',
   String $irida_ip_addr = 'localhost',
-  String $irida_version='19.09.1', #release tags  https://github.com/phac-nml/irida/releases
+  String $irida_version='20.01.2', #release tags  https://github.com/phac-nml/irida/releases
 
   Boolean $make_db = true,
   String  $db_user = 'irida',
@@ -64,7 +64,7 @@ class irida(
 ){
   ensure_packages (['epel-release'],{'ensure' => 'present'})
 
-  ensure_packages ( [ 'java-1.8.0-openjdk-headless'],{'ensure' => 'present',
+  ensure_packages ( [ 'java-11-openjdk'],{'ensure' => 'present',
   require => Package['epel-release']})
 
   include irida::security
@@ -92,50 +92,64 @@ class irida(
   }
 
 
-  tomcat::install { 'tomcat':
-    package_name        => 'tomcat',
-    package_ensure      => 'present',
-    install_from_source => false,
-    user                => $tomcat_user,
-    group               => $tomcat_group,
-    manage_user         => false,
-    require             => User[$tomcat_user]
+  file {  '/opt/tomcat':
+    ensure  => 'directory',
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    require => User[$tomcat_user]
+  }
+
+
+
+  tomcat::install { '/opt/tomcat':
+    source_url   => 'http://apache.mirror.vexxhost.com/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
+    user         => $tomcat_user,
+    group        => $tomcat_group,
+    manage_user  => false,
+    manage_home  => false,
+    manage_group => false,
+    require      => File['/opt/tomcat']
   }
 
   tomcat::service {'tomcat.service':
-    use_init       => true,
+    catalina_home  => '/opt/tomcat',
     service_ensure => true,
     service_enable => true,
     service_name   => 'tomcat.service',
-    require        => Tomcat::Install['tomcat']
+    require        => Tomcat::Install['/opt/tomcat']
   }
 
   tomcat::war { 'irida.war':
     war_source    => "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
-    catalina_base => '/var/lib/tomcat/',
+    catalina_base => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
-    notify        => Service['tomcat.service'],
-    require       => Tomcat::Install['tomcat']
+    notify        => Tomcat::Service['tomcat.service'],
+    require       => Tomcat::Install['/opt/tomcat']
   }
 
-  file_line {'tomcat temp directory':
 
-    ensure  => present,
-    path    => '/etc/tomcat/tomcat.conf',
-    line    => "CATALINA_TMPDIR=\"${irida::tomcat_tmp}\"",
-    match   => '^CATALINA_TMPDIR="/var/cache/tomcat/temp',
-    require => Tomcat::Install['tomcat'],
-    notify  => Service['tomcat.service']
+  tomcat::setenv::entry { 'temp':
+    param         => 'CATALINA_TMPDIR',
+    value         => "'$irida::tomcat_tmp'",
+    catalina_home => '/opt/tomcat/',
+    user          => $tomcat_user,
+    group         => $tomcat_group,
+    require       => Tomcat::Install['/opt/tomcat'],
+    notify        => Tomcat::Service['tomcat.service'],
   }
 
-  file_line { 'tomcat java options':
-    ensure  => present,
-    path    => '/etc/tomcat/tomcat.conf',
-    line    => "JAVA_OPTS='-Dspring.profiles.active=${profile} -Dirida.db.profile=prod'",
-    require => Tomcat::Install['tomcat'],
-    notify  => Service['tomcat.service']
+
+  tomcat::setenv::entry { 'java_opts':
+    param         => 'JAVA_OPTS',
+    value         => "'-Dspring.profiles.active=${profile} -Dirida.db.profile=prod'",
+    catalina_home => '/opt/tomcat/',
+    user          => $tomcat_user,
+    group         => $tomcat_group,
+    require       => Tomcat::Install['/opt/tomcat'],
+    notify        => Tomcat::Service['tomcat.service'],
   }
+
 
   file { '/etc/irida':
     ensure  => 'directory',
@@ -148,7 +162,7 @@ class irida(
     content => template('irida/irida.conf.erb'),
     path    => '/etc/irida/irida.conf',
     require => File['/etc/irida'],
-    notify  => Service['tomcat.service'],
+    notify  => Tomcat::Service['tomcat.service'],
   }
 
 
@@ -158,7 +172,7 @@ class irida(
     content => template('irida/web.conf.erb'),
     path    => '/etc/irida/web.conf',
     require => File['/etc/irida'],
-    notify  => Service['tomcat.service'],
+    notify  => Tomcat::Service['tomcat.service'],
   }
 
 
@@ -178,7 +192,7 @@ class irida(
     source  => 'puppet:///modules/irida/google-analytics.html',
     path    => '/etc/irida/analytics/google-analytics.html',
     require => File['/etc/irida/analytics'],
-    notify  => Service['tomcat.service'],
+    notify  => Tomcat::Service['tomcat.service'],
   }
 
   if $nfs_based {
@@ -190,7 +204,7 @@ class irida(
       provider => 'shell',
       creates  => $irida::data_directory,
       user     => $irida::tomcat_user,
-      require  => [Tomcat::Install['tomcat'],Tomcat::War['irida.war'],User[$tomcat_user]]
+      require  => [Tomcat::Install['/opt/tomcat'],Tomcat::War['irida.war'],User[$tomcat_user]]
     }
   }
   else {
@@ -199,7 +213,7 @@ class irida(
       path    => $irida::data_directory,
       owner   => $tomcat_user,
       group   => $tomcat_group,
-      require => [Tomcat::Install['tomcat'],Tomcat::War['irida.war']]
+      require => [Tomcat::Install['/opt/tomcat'],Tomcat::War['irida.war']]
     }
 
     file { 'irida ref':
@@ -228,15 +242,13 @@ class irida(
   }
 
   file { [ '/var/cache/tomcat',
-    '/var/lib/tomcat/webapps',
     '/var/cache/tomcat/work',
     $irida::tomcat_tmp ]:
     ensure  => 'directory',
     owner   => $tomcat_user,
     group   => $tomcat_group,
-    require => Tomcat::Install['tomcat']
+    require => Tomcat::Install['/opt/tomcat']
   }
-
 
 
 }
