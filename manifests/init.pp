@@ -4,6 +4,7 @@ class irida(
   String $tomcat_group = 'tomcat',
   Boolean $manage_user = true,
   String $tomcat_tmp = '/var/cache/tomcat/temp',
+  String $tomcat_location ='/opt/tomcat/',
   String $irida_ip_addr = 'localhost',
   String $irida_version='20.01.2', #release tags  https://github.com/phac-nml/irida/releases
 
@@ -92,7 +93,7 @@ class irida(
   }
 
 
-  file {  '/opt/tomcat':
+  file {  $tomcat_location:
     ensure  => 'directory',
     owner   => $tomcat_user,
     group   => $tomcat_group,
@@ -101,22 +102,22 @@ class irida(
 
 
 
-  tomcat::install { '/opt/tomcat':
+  tomcat::install { $tomcat_location:
     source_url   => 'http://apache.mirror.vexxhost.com/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
     user         => $tomcat_user,
     group        => $tomcat_group,
     manage_user  => false,
     manage_home  => false,
     manage_group => false,
-    require      => File['/opt/tomcat']
+    require      => File[$tomcat_location]
   }
 
   tomcat::service {'tomcat.service':
-    catalina_home  => '/opt/tomcat',
+    catalina_home  => $tomcat_location,
     service_ensure => true,
     service_enable => true,
     service_name   => 'tomcat.service',
-    require        => Tomcat::Install['/opt/tomcat']
+    require        => Tomcat::Install[$tomcat_location]
   }
 
   tomcat::war { 'irida.war':
@@ -125,17 +126,17 @@ class irida(
     user          => $tomcat_user,
     group         => $tomcat_group,
     notify        => Tomcat::Service['tomcat.service'],
-    require       => Tomcat::Install['/opt/tomcat']
+    require       => Tomcat::Install[$tomcat_location]
   }
 
 
   tomcat::setenv::entry { 'temp':
     param         => 'CATALINA_TMPDIR',
-    value         => "'$irida::tomcat_tmp'",
-    catalina_home => '/opt/tomcat/',
+    value         => "'${irida::tomcat_tmp}'",
+    catalina_home => $tomcat_location,
     user          => $tomcat_user,
     group         => $tomcat_group,
-    require       => Tomcat::Install['/opt/tomcat'],
+    require       => Tomcat::Install[$tomcat_location],
     notify        => Tomcat::Service['tomcat.service'],
   }
 
@@ -146,7 +147,7 @@ class irida(
     catalina_home => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
-    require       => Tomcat::Install['/opt/tomcat'],
+    require       => Tomcat::Install[$tomcat_location],
     notify        => Tomcat::Service['tomcat.service'],
   }
 
@@ -204,7 +205,7 @@ class irida(
       provider => 'shell',
       creates  => $irida::data_directory,
       user     => $irida::tomcat_user,
-      require  => [Tomcat::Install['/opt/tomcat'],Tomcat::War['irida.war'],User[$tomcat_user]]
+      require  => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war'],User[$tomcat_user]]
     }
   }
   else {
@@ -213,7 +214,7 @@ class irida(
       path    => $irida::data_directory,
       owner   => $tomcat_user,
       group   => $tomcat_group,
-      require => [Tomcat::Install['/opt/tomcat'],Tomcat::War['irida.war']]
+      require => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war']]
     }
 
     file { 'irida ref':
@@ -247,7 +248,7 @@ class irida(
     ensure  => 'directory',
     owner   => $tomcat_user,
     group   => $tomcat_group,
-    require => Tomcat::Install['/opt/tomcat']
+    require => Tomcat::Install[$tomcat_location]
   }
 
 
