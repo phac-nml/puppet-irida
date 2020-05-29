@@ -1,0 +1,59 @@
+irida::irida_version: '20.05'
+irida::profile: 'prod'
+irida::data_directory: "/opt/irida"
+irida::tomcat_location: '/opt/tomcat/'
+irida::tomcat_tmp: "/opt/tomcat/temp"
+irida::tomcat_user: 'tomcat'
+irida::tomcat_group: 'grp_tomcat'
+irida::manage_user: true
+irida::irida_ip_addr: irida.ca
+irida::make_db: true
+irida::db_user: irida
+irida::db_password: REALLYstrongPASSWORDsoGOOD!!!!1!
+irida::db_name: irida
+irida::db_host: 127.0.0.1
+irida::nfs_based: false
+irida::sequence_directory: "%{lookup('irida::data_directory')}/sequence"
+irida::reference_directory: "%{lookup('irida::data_directory')}/reference"
+irida::output_directory: "%{lookup('irida::data_directory')}/output"
+irida::assembly_directory: "%{lookup('irida::data_directory')}/assembly"
+
+irida::galaxy_execution_url: 'http://galaxy.ca'
+irida::galaxy_execution_apikey: '6ac7f311adc7ad4144835b1d415d9d51'
+irida::galaxy_execution_email: 'irida2galaxy@fake.ca'
+irida::galaxy_execution_datastorage: 'local'
+irida_disabled_workflow: ''
+
+irida::file_upload_max_size: 16106127360
+irida::file_processing_core: 4
+irida::file_processing_max: 8
+irida::file_process_queue_capacity: 512
+
+
+irida::mail_server_host: 'mail.ca'
+irida::mail_server_protocol: 'smtp'
+irida::mail_server_email: 'irida@mail.ca'
+irida::mail_server_username: 'IRIDA Platform'
+irida::help_page_title: ''
+irida::help_page_url: ''
+irida::help_contact_email: ''
+irida::irida_analysis_warning: ''
+
+irida::galaxy_library_upload_timeout: 300
+irida::galaxy_library_upload_polling_time: 5
+irida::galaxy_library_upload_threads: 1
+irida::irida_workflow_max_running: 4
+irida::irida_analysis_cleanup_days: 15
+irida::irida_scheduled_subscription_cron: '0 0 0 * * *'
+irida::security_password_expiry: -1
+irida::irida_scheduled_threads: 2
+
+
+irida::ncbi_upload_user: 'test'
+irida::ncbi_upload_password: 'password'
+irida::ncbi_upload_basedirectory: 'tmp'
+irida::ncbi_upload_namespace: 'IRIDA'
+irida::ncbi_upload_port: 21
+irida::ncbi_upload_controlkeepalivetimeoutseconds: 300
+irida::ncbi_upload_controlkeepalivereplytimeoutmilliseconds: 2000
+irida::ncbi_upload_ftp_passive: true

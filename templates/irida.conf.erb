@@ -4,10 +4,11 @@
 sequence.file.base.directory=<%= @sequence_directory %>
 reference.file.base.directory=<%= @reference_directory %>
 output.file.base.directory=<%= @output_directory %>
+assembly.file.base.directory=<%= @assembly_directory %>
 
 ##### Set the max upload size (in bytes). If left unconfigured, the max upload
 ##### size is unlimited (or limited by the container hosting IRIDA).
-# file.upload.max_size=<%= @file_upload_max_size %>
+file.upload.max_size=<%= @file_upload_max_size %>
 
 ##### Set number of threads for FASTQC and file post-processsing.  The max size
 ##### should not be more than the number of jdbc threads.
