@@ -18,7 +18,6 @@ irida::reference_directory: "%{lookup('irida::data_directory')}/reference"
 irida::output_directory: "%{lookup('irida::data_directory')}/output"
 irida::assembly_directory: "%{lookup('irida::data_directory')}/assembly"
 
-#Galaxy information to allow for data analysis
 irida::galaxy_execution_url: 'http://galaxy.ca'
 irida::galaxy_execution_apikey: '6ac7f311adc7ad4144835b1d415d9d51'
 irida::galaxy_execution_email: 'irida2galaxy@fake.ca'

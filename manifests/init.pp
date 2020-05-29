@@ -24,6 +24,7 @@ class irida(
   String $sequence_directory = "${data_directory}/sequence",
   String $reference_directory = "${data_directory}/reference",
   String $output_directory = "${data_directory}/output",
+  String $assembly_directory= "${data_directory}/assembly",
   String $profile = 'prod',
 
 
@@ -201,7 +202,8 @@ class irida(
       command  => "mkdir -p ${irida::data_directory};
       mkdir -p ${irida::reference_directory};
       mkdir -p ${irida::sequence_directory};
-      mkdir -p ${irida::output_directory};",
+      mkdir -p ${irida::output_directory};
+      mkdir -p ${irida::assembly_directory}",
       provider => 'shell',
       creates  => $irida::data_directory,
       user     => $irida::tomcat_user,
@@ -236,6 +238,14 @@ class irida(
     file { 'irida output':
       ensure  => 'directory',
       path    => $irida::output_directory,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => File[$irida::data_directory]
+    }
+
+    file { 'irida assembly':
+      ensure  => 'directory',
+      path    => $irida::assembly_directory,
       owner   => $tomcat_user,
       group   => $tomcat_group,
       require => File[$irida::data_directory]
