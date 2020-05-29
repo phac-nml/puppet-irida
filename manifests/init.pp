@@ -203,7 +203,7 @@ class irida(
       mkdir -p ${irida::reference_directory};
       mkdir -p ${irida::sequence_directory};
       mkdir -p ${irida::output_directory};
-      mkdir -p ${irida::assembly_directory}",
+      mkdir -p ${irida::assembly_directory};",
       provider => 'shell',
       creates  => $irida::data_directory,
       user     => $irida::tomcat_user,
