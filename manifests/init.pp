@@ -113,20 +113,31 @@ class irida(
     require      => File[$tomcat_location]
   }
 
-  tomcat::service {'tomcat.service':
-    catalina_home  => $tomcat_location,
-    service_ensure => true,
-    service_enable => true,
-    service_name   => 'tomcat.service',
-    require        => Tomcat::Install[$tomcat_location]
+
+
+  include systemd
+
+  file { '/etc/systemd/system/tomcat.service':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('irida/tomcat.service.erb'),
+    require => Tomcat::Install[$tomcat_location],
+  } -> Class['systemd::systemctl::daemon_reload']
+
+  service { 'tomcat':
+    ensure    => 'running',
+    subscribe => File['/etc/systemd/system/tomcat.service'],
   }
+
 
   tomcat::war { 'irida.war':
     war_source    => "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
     catalina_base => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
-    notify        => Tomcat::Service['tomcat.service'],
+    notify        => Service['tomcat'],
     require       => Tomcat::Install[$tomcat_location]
   }
 
@@ -138,7 +149,7 @@ class irida(
     user          => $tomcat_user,
     group         => $tomcat_group,
     require       => Tomcat::Install[$tomcat_location],
-    notify        => Tomcat::Service['tomcat.service'],
+    notify        => Service['tomcat'],
   }
 
 
@@ -149,7 +160,7 @@ class irida(
     user          => $tomcat_user,
     group         => $tomcat_group,
     require       => Tomcat::Install[$tomcat_location],
-    notify        => Tomcat::Service['tomcat.service'],
+    notify        => Service['tomcat'],
   }
 
 
@@ -164,7 +175,7 @@ class irida(
     content => template('irida/irida.conf.erb'),
     path    => '/etc/irida/irida.conf',
     require => File['/etc/irida'],
-    notify  => Tomcat::Service['tomcat.service'],
+    notify  => Service['tomcat'],
   }
 
 
@@ -174,7 +185,7 @@ class irida(
     content => template('irida/web.conf.erb'),
     path    => '/etc/irida/web.conf',
     require => File['/etc/irida'],
-    notify  => Tomcat::Service['tomcat.service'],
+    notify  => Service['tomcat'],
   }
 
 
@@ -194,7 +205,7 @@ class irida(
     source  => 'puppet:///modules/irida/google-analytics.html',
     path    => '/etc/irida/analytics/google-analytics.html',
     require => File['/etc/irida/analytics'],
-    notify  => Tomcat::Service['tomcat.service'],
+    notify  => Service['tomcat'],
   }
 
   if $nfs_based {
