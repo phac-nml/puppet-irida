@@ -214,7 +214,8 @@ class irida(
       mkdir -p ${irida::reference_directory};
       mkdir -p ${irida::sequence_directory};
       mkdir -p ${irida::output_directory};
-      mkdir -p ${irida::assembly_directory};",
+      mkdir -p ${irida::assembly_directory};
+      mkdir -p ${irida::tomcat_tmp};",
       provider => 'shell',
       creates  => $irida::data_directory,
       user     => $irida::tomcat_user,
@@ -261,11 +262,19 @@ class irida(
       group   => $tomcat_group,
       require => File[$irida::data_directory]
     }
+
+
+    file { 'tomcat temp':
+      ensure  => 'directory',
+      path    => $irida::tomcat_tmp,
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      require => Tomcat::Install[$tomcat_location]
+    }
   }
 
   file { [ '/var/cache/tomcat',
-    '/var/cache/tomcat/work',
-    $irida::tomcat_tmp ]:
+    '/var/cache/tomcat/work']:
     ensure  => 'directory',
     owner   => $tomcat_user,
     group   => $tomcat_group,
