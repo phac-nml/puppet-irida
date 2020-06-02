@@ -5,9 +5,15 @@
 # @example
 #   include irida::web_server
 class irida::web_server (
-  String $irida_ip_addr = $ipaddress
+  String  $irida_ip_addr        = $ipaddress,
+  Boolean $use_ssl              = $use_ssl,
+  String  $cert_file_path       = $cert_file_path,
+  String  $cert_key_file_path   = $cert_key_file_path,
 ) {
-  ensure_resource('package', 'epel-release', {'ensure' => 'present'})
+
+  package { 'mod_ssl':
+    ensure => 'present'
+  }
 
   package { 'httpd':
     ensure  => 'present',
@@ -22,10 +28,47 @@ class irida::web_server (
     notify  => Service['httpd.service'],
   }
 
+  if $use_ssl {
+    file { 'server.crt':
+      ensure => 'present',
+      source => $cert_file_path,
+      path   => '/etc/ssl/certs/server.crt'
+    }
+
+    file { 'server.key':
+      ensure => 'present',
+      source => $cert_key_file_path,
+      path   => '/etc/ssl/certs/server.key'
+    }
+
+    exec { 'Start_SSL':
+      path    => ['/usr/bin', '/usr/sbin', '/bin'],
+      command => 'apachectl restart',
+      require => [File['server.crt'], File['server.key']]
+    }
+  }
+
+  case $use_ssl {
+    true: {
+      $service_deps = [
+                        Package['httpd'],
+                        File['httpd_irida.conf'],
+                        File['server.crt'],
+                        File['server.key'],
+                        Exec['Start_SSL']
+                      ]
+    }
+    default: {
+      $service_deps = [
+                        Package['httpd'],
+                        File['httpd_irida.conf']
+                      ]
+    }
+  }
+
   service {'httpd.service':
     ensure  => running,
     enable  => true,
-    require => Package['httpd']
+    require => $service_deps
   }
-
 }

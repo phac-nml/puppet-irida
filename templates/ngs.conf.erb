@@ -1,4 +1,8 @@
+<% if @use_ssl %>
+<VirtualHost *:443>
+<% else %>
 <VirtualHost *:80>
+<% end %>
 	ServerName http://<%= @irida_ip_addr %>
 	ErrorLog /var/log/httpd/irida.ajp.error.log
 	CustomLog /var/log/httpd/irida.ajp.log combined
@@ -24,4 +28,10 @@
 	<Location /irida>
 	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
 	</Location>
+
+	<% if @use_ssl %>
+	SSLEngine on
+	SSLCertificateFile /etc/ssl/certs/server.crt
+	SSLCertificateKeyFile /etc/ssl/certs/server.key
+	<% end %>
 </VirtualHost>
