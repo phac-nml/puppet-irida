@@ -20,6 +20,12 @@ class irida::web_server (
     require => Package['epel-release']
   }
 
+  service {'httpd.service':
+    ensure  => running,
+    enable  => true,
+    require => [Package['httpd'], File['httpd_irida.conf']]
+  }
+
   file { 'httpd_irida.conf':
     ensure  => 'present',
     content => template('irida/ngs.conf.erb'),
@@ -43,28 +49,5 @@ class irida::web_server (
       path   => '/etc/ssl/certs/server.key',
       notify => Service['httpd.service'],
     }
-  }
-
-  case $use_ssl {
-    true: {
-      $service_deps = [
-                        Package['httpd'],
-                        File['httpd_irida.conf'],
-                        File['server.crt'],
-                        File['server.key'],
-                      ]
-    }
-    default: {
-      $service_deps = [
-                        Package['httpd'],
-                        File['httpd_irida.conf']
-                      ]
-    }
-  }
-
-  service {'httpd.service':
-    ensure  => running,
-    enable  => true,
-    require => $service_deps
   }
 }
