@@ -2,24 +2,24 @@
 class irida::security(
   Boolean $use_ssl = $use_ssl
 ){
-  if $::facts['os']['selinux']['enabled'] {
-    include firewalld
-    firewalld_port { 'Open port 80 in the public zone':
+  include firewalld
+  firewalld_port { 'Open port 80 in the public zone':
+    ensure   => present,
+    zone     => 'public',
+    port     => 80,
+    protocol => 'tcp',
+  }
+
+  if $use_ssl {
+    firewalld_port { 'Open port 443 in the public zone':
       ensure   => present,
       zone     => 'public',
-      port     => 80,
+      port     => 443,
       protocol => 'tcp',
     }
+  }
 
-    if $use_ssl {
-      firewalld_port { 'Open port 443 in the public zone':
-        ensure   => present,
-        zone     => 'public',
-        port     => 443,
-        protocol => 'tcp',
-      }
-    }
-
+  if $::facts['os']['selinux']['enabled'] {
     selboolean { 'httpd_can_network_connect':
       persistent => true,
       value      => on,
