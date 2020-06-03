@@ -1,6 +1,6 @@
 #security for IRIDA instance
 class irida::security(
-  Boolean $use_ssl = $use_ssl
+  Boolean $apache_use_ssl = $use_ssl
 ){
   include firewalld
   firewalld_port { 'Open port 80 in the public zone':
@@ -10,7 +10,7 @@ class irida::security(
     protocol => 'tcp',
   }
 
-  if $use_ssl {
+  if $apache_use_ssl {
     firewalld_port { 'Open port 443 in the public zone':
       ensure   => present,
       zone     => 'public',

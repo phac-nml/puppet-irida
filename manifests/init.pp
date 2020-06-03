@@ -71,7 +71,7 @@ class irida(
   require => Package['epel-release']})
 
   class {'irida::security':
-    use_ssl => $use_ssl
+    apache_use_ssl => $use_ssl
   }
 
   class {'irida::database':
@@ -84,7 +84,7 @@ class irida(
   }
   class {'irida::web_server':
     irida_ip_addr      => $irida::irida_ip_addr,
-    use_ssl            => $use_ssl,
+    apache_use_ssl     => $use_ssl,
     cert_file_path     => $cert_file_path,
     cert_key_file_path => $cert_key_file_path
   }

@@ -6,7 +6,7 @@
 #   include irida::web_server
 class irida::web_server (
   String  $irida_ip_addr        = $ipaddress,
-  Boolean $use_ssl              = $use_ssl,
+  Boolean $apache_use_ssl       = $use_ssl,
   String  $cert_file_path       = $cert_file_path,
   String  $cert_key_file_path   = $cert_key_file_path,
 ) {
@@ -20,7 +20,7 @@ class irida::web_server (
     require => Package['epel-release']
   }
 
-  service {'httpd.service':
+  service { 'httpd.service':
     ensure  => running,
     enable  => true,
     require => [Package['httpd'], File['httpd_irida.conf']]
@@ -34,7 +34,7 @@ class irida::web_server (
     notify  => Service['httpd.service'],
   }
 
-  if $use_ssl {
+  if $apache_use_ssl {
     file { 'server.crt':
       ensure => 'present',
       source => $cert_file_path,
