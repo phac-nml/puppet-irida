@@ -1,6 +1,6 @@
 #security for IRIDA instance
 class irida::security(
-  Boolean $apache_use_ssl = $use_ssl
+  Boolean $apache_use_ssl,
 ){
   include firewalld
   firewalld_port { 'Open port 80 in the public zone':
