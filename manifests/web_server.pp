@@ -5,10 +5,10 @@
 # @example
 #   include irida::web_server
 class irida::web_server (
-  String  $irida_ip_addr = $ipaddress,
   Boolean $apache_use_ssl,
   String  $cert_file_path,
   String  $cert_key_file_path,
+  String  $irida_ip_addr = $ipaddress,
 ) {
 
   package { 'mod_ssl':
