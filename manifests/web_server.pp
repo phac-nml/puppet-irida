@@ -32,19 +32,16 @@ class irida::web_server (
     file { 'server.crt':
       ensure => 'present',
       source => $cert_file_path,
-      path   => '/etc/ssl/certs/server.crt'
+      path   => '/etc/ssl/certs/server.crt',
+      notify => Service['httpd.service'],
+
     }
 
     file { 'server.key':
       ensure => 'present',
       source => $cert_key_file_path,
-      path   => '/etc/ssl/certs/server.key'
-    }
-
-    exec { 'Start_SSL':
-      path    => ['/usr/bin', '/usr/sbin', '/bin'],
-      command => 'apachectl restart',
-      require => [File['server.crt'], File['server.key']]
+      path   => '/etc/ssl/certs/server.key',
+      notify => Service['httpd.service'],
     }
   }
 
@@ -55,7 +52,6 @@ class irida::web_server (
                         File['httpd_irida.conf'],
                         File['server.crt'],
                         File['server.key'],
-                        Exec['Start_SSL']
                       ]
     }
     default: {
