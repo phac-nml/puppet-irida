@@ -5,9 +5,9 @@
 # @example
 #   include irida::web_server
 class irida::web_server (
-  Boolean $apache_use_ssl,
-  String  $cert_file_path,
-  String  $cert_key_file_path,
+  Boolean $apache_use_ssl = false,
+  String  $cert_file_path = '',
+  String  $cert_key_file_path = '',
   String  $irida_ip_addr = $ipaddress,
 ) {
 
