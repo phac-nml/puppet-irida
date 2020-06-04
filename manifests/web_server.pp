@@ -11,6 +11,8 @@ class irida::web_server (
   String  $irida_ip_addr = $ipaddress,
 ) {
 
+  ensure_resource('package', 'epel-release', {'ensure' => 'present'})
+
   package { 'mod_ssl':
     ensure => 'present'
   }
