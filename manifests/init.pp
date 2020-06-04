@@ -34,8 +34,8 @@ class irida(
   String $irida_disabled_workflow      = '',
 
   Boolean $use_ssl            = false,
-  String  $cert_file_path     = 'puppet:///modules/irida/my_server_certificate.crt',
-  String  $cert_key_file_path = 'puppet:///modules/irida/my_server_private_key.key',
+  String  $cert_file_path     = 'puppet:///modules/irida/server.crt',
+  String  $cert_key_file_path = 'puppet:///modules/irida/server.key',
 
   String $mail_server_host       = 'mail.ca',
   String $mail_server_protocol   = 'smtp',
