@@ -1,7 +1,50 @@
+<% if @use_ssl %>
+# Redirect Client HTTP traffic to HTTPS
+LoadModule rewrite_module modules/mod_rewrite.so
+RewriteEngine On 
+RewriteCond %{HTTPS}  !=on 
+RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L] 
+
+# Redirect HTTP traffic after proxy to HTTPS
+Header edit Location ^http://(.*)$ https://$1
+
+<VirtualHost *:443>
+	ServerName 		http://<%= @irida_ip_addr %>
+	ErrorLog 		/var/log/httpd/irida.ajp.error.log
+	CustomLog 		/var/log/httpd/irida.ajp.log combined
+	ErrorDocument	503	/proxy-error/503.html
+
+	# SSL Configs
+	SSLEngine on
+	SSLCertificateFile /etc/ssl/certs/server.crt
+	SSLCertificateKeyFile /etc/ssl/certs/server.key
+
+	<Proxy *>
+		AddDefaultCharset Off
+		Order deny,allow
+		Allow from all
+	</Proxy>
+
+	ProxyPreserveHost 	On
+	ProxyPass 			/ 	http://<%= @irida_ip_addr %>:8080/irida
+	ProxyPassReverse 	/ 	http://<%= @irida_ip_addr %>:8080/irida
+
+	# REST API:
+	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
+	<Location /irida>
+	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
+	</Location>
+
+	# Custom error pages
+	ProxyPass /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
+	ProxyPassReverse /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
+	
+</VirtualHost>
+<% else %>
 <VirtualHost *:80>
-	ServerName http://<%= @irida_ip_addr %>
-	ErrorLog /var/log/httpd/irida.ajp.error.log
-	CustomLog /var/log/httpd/irida.ajp.log combined
+	ServerName		http://<%= @irida_ip_addr %>
+	ErrorLog 		/var/log/httpd/irida.ajp.error.log
+	CustomLog 		/var/log/httpd/irida.ajp.log combined
 	ErrorDocument	503	/proxy-error/503.html
 
 	<Proxy *>
@@ -11,9 +54,9 @@
 	</Proxy>
 
 	# Custom error pages
-	ProxyPass		/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
-	ProxyPassReverse	/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 	ProxyPreserveHost 	On
+	ProxyPass			/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
+	ProxyPassReverse	/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 
 	<Location />
 	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
@@ -25,3 +68,4 @@
 	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
 	</Location>
 </VirtualHost>
+<% end %>

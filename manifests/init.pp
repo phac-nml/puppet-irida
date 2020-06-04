@@ -1,67 +1,68 @@
 #Installation of IRIDA web server
 class irida(
-  String $tomcat_user = 'tomcat',
-  String $tomcat_group = 'tomcat',
-  Boolean $manage_user = true,
-  String $tomcat_tmp = '/var/cache/tomcat/temp',
-  String $tomcat_location ='/opt/tomcat/',
-  String $irida_ip_addr = 'localhost',
-  String $irida_version='20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+  String  $tomcat_user     = 'tomcat',
+  String  $tomcat_group    = 'tomcat',
+  Boolean $manage_user     = true,
+  String  $tomcat_tmp      = '/var/cache/tomcat/temp',
+  String  $tomcat_location = '/opt/tomcat/',
+  String  $irida_ip_addr   = 'localhost',
+  String  $irida_version   = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
 
-  Boolean $make_db = true,
-  String  $db_user = 'irida',
-  String  $db_name = 'irida',
+  Boolean $make_db     = true,
+  String  $db_user     = 'irida',
+  String  $db_name     = 'irida',
   String  $db_password = 'irida',
-  String  $db_host = '127.0.0.1',
+  String  $db_host     = '127.0.0.1',
 
-  Integer $file_upload_max_size = 16106127360,
-  Integer $file_processing_core = 4,
-  Integer $file_processing_max = 8,
+  Integer $file_upload_max_size        = 16106127360,
+  Integer $file_processing_core        = 4,
+  Integer $file_processing_max         = 8,
   Integer $file_process_queue_capacity = 512,
 
-  Boolean $nfs_based = false,
-  String $data_directory = '/opt/data',
-  String $sequence_directory = "${data_directory}/sequence",
-  String $reference_directory = "${data_directory}/reference",
-  String $output_directory = "${data_directory}/output",
-  String $assembly_directory= "${data_directory}/assembly",
-  String $profile = 'prod',
+  Boolean $nfs_based           = false,
+  String  $data_directory      = '/opt/data',
+  String  $sequence_directory  = "${data_directory}/sequence",
+  String  $reference_directory = "${data_directory}/reference",
+  String  $output_directory    = "${data_directory}/output",
+  String  $assembly_directory  = "${data_directory}/assembly",
+  String  $profile             = 'prod',
 
+  String $galaxy_execution_url         = 'http://usegalaxy.org',
+  String $galaxy_execution_apikey      = 'changemetorealapikey',
+  String $galaxy_execution_email       = 'workflow@localhost.com',
+  String $galaxy_execution_datastorage = 'local',
+  String $irida_disabled_workflow      = '',
 
-  String $galaxy_execution_url= 'http://usegalaxy.org',
-  String $galaxy_execution_apikey= 'changemetorealapikey',
-  String $galaxy_execution_email='workflow@localhost.com',
-  String $galaxy_execution_datastorage='local',
-  String $irida_disabled_workflow='',
+  Boolean $use_ssl            = false,
+  String  $cert_file_path     = 'puppet:///modules/irida/my_server_certificate.crt',
+  String  $cert_key_file_path = 'puppet:///modules/irida/my_server_private_key.key',
 
+  String $mail_server_host       = 'mail.ca',
+  String $mail_server_protocol   = 'smtp',
+  String $mail_server_email      = 'irida@mail.ca',
+  String $mail_server_username   = 'IRIDA Platform',
+  String $help_page_title        = '',
+  String $help_page_url          = '',
+  String $help_contact_email     = '',
+  String $irida_analysis_warning = '',
 
-  String $mail_server_host='mail.ca',
-  String $mail_server_protocol='smtp',
-  String $mail_server_email='irida@mail.ca',
-  String $mail_server_username='IRIDA Platform',
-  String $help_page_title='',
-  String $help_page_url='',
-  String $help_contact_email='',
-  String $irida_analysis_warning='',
+  Integer $galaxy_library_upload_timeout      = 300,
+  Integer $galaxy_library_upload_polling_time = 5,
+  Integer $galaxy_library_upload_threads      = 1,
+  Integer $irida_workflow_max_running         = 4,
+  Integer $irida_analysis_cleanup_days        = 15,
+  String  $irida_scheduled_subscription_cron  = '0 0 0 * * *',
+  Integer $security_password_expiry           = -1,
+  Integer $irida_scheduled_threads            = 2,
 
-  Integer $galaxy_library_upload_timeout=300,
-  Integer $galaxy_library_upload_polling_time=5,
-  Integer $galaxy_library_upload_threads=1,
-  Integer $irida_workflow_max_running=4,
-  Integer $irida_analysis_cleanup_days=15,
-  String  $irida_scheduled_subscription_cron='0 0 0 * * *',
-  Integer $security_password_expiry=-1,
-  Integer $irida_scheduled_threads=2,
-
-
-  String $ncbi_upload_user='test',
-  String $ncbi_upload_password='password',
-  String $ncbi_upload_basedirectory='tmp',
-  String $ncbi_upload_namespace='IRIDA',
-  Integer $ncbi_upload_port=21,
-  Integer $ncbi_upload_controlkeepalivetimeoutseconds=300,
-  Integer $ncbi_upload_controlkeepalivereplytimeoutmilliseconds=2000,
-  Boolean $ncbi_upload_ftp_passive=true,
+  String $ncbi_upload_user                                      = 'test',
+  String $ncbi_upload_password                                  = 'password',
+  String $ncbi_upload_basedirectory                             = 'tmp',
+  String $ncbi_upload_namespace                                 = 'IRIDA',
+  Integer $ncbi_upload_port                                     = 21,
+  Integer $ncbi_upload_controlkeepalivetimeoutseconds           = 300,
+  Integer $ncbi_upload_controlkeepalivereplytimeoutmilliseconds = 2000,
+  Boolean $ncbi_upload_ftp_passive                              = true,
 
 ){
   ensure_packages (['epel-release'],{'ensure' => 'present'})
@@ -69,7 +70,9 @@ class irida(
   ensure_packages ( [ 'java-11-openjdk'],{'ensure' => 'present',
   require => Package['epel-release']})
 
-  include irida::security
+  class {'irida::security':
+    apache_use_ssl => $irida::use_ssl
+  }
 
   class {'irida::database':
     make_db     => $irida::make_db,
@@ -80,7 +83,10 @@ class irida(
 
   }
   class {'irida::web_server':
-    irida_ip_addr => $irida::irida_ip_addr
+    irida_ip_addr      => $irida::irida_ip_addr,
+    apache_use_ssl     => $irida::use_ssl,
+    cert_file_path     => $irida::cert_file_path,
+    cert_key_file_path => $irida::cert_key_file_path
   }
 
   if $manage_user {
@@ -101,8 +107,6 @@ class irida(
     require => User[$tomcat_user]
   }
 
-
-
   tomcat::install { $tomcat_location:
     source_url   => 'http://apache.mirror.vexxhost.com/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
     user         => $tomcat_user,
@@ -112,8 +116,6 @@ class irida(
     manage_group => false,
     require      => File[$tomcat_location]
   }
-
-
 
   include systemd
 
