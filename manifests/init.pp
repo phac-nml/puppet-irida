@@ -33,9 +33,10 @@ class irida(
   String $galaxy_execution_datastorage = 'local',
   String $irida_disabled_workflow      = '',
 
-  Boolean $use_ssl            = false,
-  String  $cert_file_path     = 'puppet:///modules/irida/server.crt',
-  String  $cert_key_file_path = 'puppet:///modules/irida/server.key',
+  Boolean $use_ssl              = false,
+  String  $cert_file_path       = 'puppet:///modules/irida/ServerCertificate.crt',
+  String  $cert_chain_file_path = 'puppet:///modules/irida/ChainBundle2.crt',
+  String  $cert_private_key     = '',
 
   String $mail_server_host       = 'mail.ca',
   String $mail_server_protocol   = 'smtp',
@@ -80,13 +81,14 @@ class irida(
     db_name     => $irida::db_name,
     db_password => $irida::db_password,
     db_host     => $irida::db_host,
-
   }
+
   class {'irida::web_server':
-    irida_ip_addr      => $irida::irida_ip_addr,
-    apache_use_ssl     => $irida::use_ssl,
-    cert_file_path     => $irida::cert_file_path,
-    cert_key_file_path => $irida::cert_key_file_path
+    irida_ip_addr        => $irida::irida_ip_addr,
+    apache_use_ssl       => $irida::use_ssl,
+    cert_file_path       => $irida::cert_file_path,
+    cert_chain_file_path => $irida::cert_chain_file_path,
+    cert_private_key     => $irida::cert_private_key,
   }
 
   if $manage_user {
