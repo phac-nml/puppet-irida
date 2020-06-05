@@ -8,6 +8,9 @@ RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
 # Redirect HTTP traffic after proxy to HTTPS
 Header edit Location ^http://(.*)$ https://$1
 
+# Make sure links are generated in HTTPS
+RequestHeader set X-Forwarded-Proto "https"
+
 <VirtualHost *:443>
 	ServerName 		http://<%= @irida_ip_addr %>
 	ErrorLog 		/var/log/httpd/irida.ajp.error.log
@@ -19,7 +22,7 @@ Header edit Location ^http://(.*)$ https://$1
 	SSLCertificateFile 		/etc/ssl/certs/server.crt
 	SSLCertificateChainFile /etc/ssl/certs/chainbundle.crt
 	SSLCertificateKeyFile 	/etc/ssl/certs/server.key
-	
+
 	<Proxy *>
 		AddDefaultCharset Off
 		Order deny,allow
