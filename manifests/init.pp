@@ -33,7 +33,7 @@ class irida(
   String $galaxy_execution_datastorage = 'local',
   String $irida_disabled_workflow      = '',
 
-  Boolean $use_ssl              = true,
+  Boolean $use_ssl              = false,
   String  $cert_file_path       = 'puppet:///modules/irida/ServerCertificate.crt',
   String  $cert_chain_file_path = 'puppet:///modules/irida/ChainBundle2.crt',
   String  $cert_private_key     = '',
