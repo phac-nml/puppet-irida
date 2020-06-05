@@ -182,8 +182,6 @@ class irida(
     notify  => Service['tomcat'],
   }
 
-
-
   file { 'web.conf':
     ensure  => 'present',
     content => template('irida/web.conf.erb'),
@@ -192,12 +190,10 @@ class irida(
     notify  => Service['tomcat'],
   }
 
-
   file { '/etc/irida/plugins':
     ensure  => 'directory',
     require => File['/etc/irida'],
   }
-
 
   file { '/etc/irida/analytics':
     ensure  => 'directory',
