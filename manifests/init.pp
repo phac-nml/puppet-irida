@@ -209,17 +209,17 @@ class irida(
   }
 
   if $nfs_based {
-    exec {'irida directories':
-      command  => "mkdir -p ${irida::data_directory};
-      mkdir -p ${irida::reference_directory};
-      mkdir -p ${irida::sequence_directory};
-      mkdir -p ${irida::output_directory};
-      mkdir -p ${irida::assembly_directory};
-      mkdir -p ${irida::tomcat_tmp};",
-      provider => 'shell',
-      creates  => $irida::data_directory,
-      user     => $irida::tomcat_user,
-      require  => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war'],User[$tomcat_user]]
+    $irida_directories = [$irida::data_directory,
+                          $irida::sequence_directory,
+                          $irida::reference_directory,
+                          $irida::output_directory,
+                          $irida::assembly_directory,
+                          $irida::tomcat_tmp]
+    file { $irida_directories:
+      ensure  => 'directory',
+      owner   => $irida::tomcat_user,
+      group   => $irida::tomcat_group,
+      require => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war'],User[$tomcat_user]]
     }
   }
   else {
