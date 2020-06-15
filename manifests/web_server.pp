@@ -6,9 +6,9 @@
 #   include irida::web_server
 class irida::web_server (
   Boolean $apache_use_ssl = false,
-  String  $cert_file_path = '',
-  String  $cert_chain_file_path = '',
-  String  $cert_private_key = '',
+  String  $ssl_server_cert = '',
+  String  $ssl_chainbundle_cert = '',
+  String  $ssl_cert_private_key = '',
   String  $irida_ip_addr = $ipaddress,
 ) {
 
@@ -39,22 +39,22 @@ class irida::web_server (
 
   if $apache_use_ssl {
     file { 'server.crt':
-      ensure => 'present',
-      source => $cert_file_path,
-      path   => '/etc/ssl/certs/server.crt',
-      notify => Service['httpd.service'],
+      ensure  => 'present',
+      content => template('irida/server.crt.erb'),
+      path    => '/etc/ssl/certs/server.crt',
+      notify  => Service['httpd.service'],
     }
 
     file { 'chainbundle.crt':
-      ensure => 'present',
-      source => $cert_chain_file_path,
-      path   => '/etc/ssl/certs/chainbundle.crt',
-      notify => Service['httpd.service'],
+      ensure  => 'present',
+      content => template('irida/chainbundle.crt.erb'),
+      path    => '/etc/ssl/certs/chainbundle.crt',
+      notify  => Service['httpd.service'],
     }
 
     file { 'server.key':
       ensure  => 'present',
-      content => $cert_private_key,
+      content => template('irida/server.key.erb'),
       path    => '/etc/ssl/certs/server.key',
       notify  => Service['httpd.service'],
     }
