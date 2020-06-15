@@ -34,9 +34,9 @@ class irida(
   String $irida_disabled_workflow      = '',
 
   Boolean $use_ssl              = false,
-  String  $cert_file_path       = 'puppet:///modules/irida/ServerCertificate.crt',
-  String  $cert_chain_file_path = 'puppet:///modules/irida/ChainBundle2.crt',
-  String  $cert_private_key     = '',
+  String  $ssl_server_cert      = '',
+  String  $ssl_chainbundle_cert = '',
+  String  $ssl_cert_private_key = '',
 
   String $mail_server_host       = 'mail.ca',
   String $mail_server_protocol   = 'smtp',
@@ -86,9 +86,9 @@ class irida(
   class {'irida::web_server':
     irida_ip_addr        => $irida::irida_ip_addr,
     apache_use_ssl       => $irida::use_ssl,
-    cert_file_path       => $irida::cert_file_path,
-    cert_chain_file_path => $irida::cert_chain_file_path,
-    cert_private_key     => $irida::cert_private_key,
+    ssl_server_cert      => $irida::ssl_server_cert,
+    ssl_chainbundle_cert => $irida::ssl_chainbundle_cert,
+    ssl_cert_private_key => $irida::ssl_cert_private_key,
   }
 
   if $manage_user {
@@ -110,7 +110,7 @@ class irida(
   }
 
   tomcat::install { $tomcat_location:
-    source_url   => 'http://apache.mirror.vexxhost.com/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
+    source_url   => 'https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
     user         => $tomcat_user,
     group        => $tomcat_group,
     manage_user  => false,
