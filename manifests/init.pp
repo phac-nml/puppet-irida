@@ -66,8 +66,7 @@ class irida(
   Boolean $ncbi_upload_ftp_passive                              = true,
 
 ){
-  ensure_packages (['epel-release'],{'ensure' => 'present'})
-
+  ensure_packages (['epel-release','python3-pip','python3-devel','python-virtualenv'],{'ensure' => 'present'})
   ensure_packages ( [ 'java-11-openjdk'],{'ensure' => 'present',
   require => Package['epel-release']})
 
