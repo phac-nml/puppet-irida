@@ -1,12 +1,19 @@
 #Installation of IRIDA web server
 class irida(
-  String  $tomcat_user     = 'tomcat',
-  String  $tomcat_group    = 'tomcat',
-  Boolean $manage_user     = true,
-  String  $tomcat_tmp      = '/var/cache/tomcat/temp',
-  String  $tomcat_location = '/opt/tomcat/',
-  String  $irida_ip_addr   = 'localhost',
-  String  $irida_version   = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+  String  $tomcat_user          = 'tomcat',
+  String  $tomcat_group         = 'tomcat',
+  Boolean $manage_user          = true,
+  String  $tomcat_tmp           = '/var/cache/tomcat/temp',
+  String  $tomcat_location      = '/opt/tomcat/',
+  String  $tomcat_logs_location = "${tomcat_location}logs",
+  String  $irida_ip_addr        = 'localhost',
+  String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+
+  Boolean       $splunk_index_logs       = false,
+  String        $splunk_receiver         = 'my-splunk-receiver-example.com',
+  Array[String] $splunk_target_log_files = [
+    "${tomcat_logs_location}/catalina.out"
+  ],
 
   Boolean $make_db     = true,
   String  $db_user     = 'irida',
@@ -286,5 +293,22 @@ class irida(
     require => Tomcat::Install[$tomcat_location]
   }
 
+# Splunk Logging
 
+  if $splunk_index_logs {
+    class { '::splunk::params':
+        server => $splunk_receiver,
+    }
+
+    include ::splunk::forwarder
+
+    $splunk_target_log_files.each |String $log_file| {
+      @splunkforwarder_input { "monitor_${log_file}":
+        section => "monitor://${log_file}",
+        setting => 'sourcetype',
+        value   => 'irida',
+        tag     => 'splunkX_forwarder'
+      }
+    }
+  }
 }
