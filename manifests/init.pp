@@ -8,6 +8,7 @@ class irida(
   String  $tomcat_logs_location = "${tomcat_location}logs",
   String  $irida_ip_addr        = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+  String  $war_url              = "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
 
   Boolean       $splunk_index_logs       = false,
   String        $splunk_receiver         = 'my-splunk-receiver-example.com',
@@ -143,7 +144,7 @@ class irida(
 
 
   tomcat::war { 'irida.war':
-    war_source    => "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
+    war_source    => $war_url,
     catalina_base => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
@@ -212,6 +213,14 @@ class irida(
     path    => '/etc/irida/analytics/google-analytics.html',
     require => File['/etc/irida/analytics'],
     notify  => Service['tomcat'],
+  }
+
+  file { '/irida_upgrade.config':
+    ensure  => 'present',
+    content => template('irida/irida_upgrade.config.erb'),
+    owner   => root,
+    group   => root,
+    mode    => '0400'
   }
 
   if $nfs_based {
