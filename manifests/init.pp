@@ -186,6 +186,9 @@ class irida(
     path    => '/etc/irida/irida.conf',
     require => File['/etc/irida'],
     notify  => Service['tomcat'],
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0600',
   }
 
   file { 'web.conf':
@@ -194,6 +197,9 @@ class irida(
     path    => '/etc/irida/web.conf',
     require => File['/etc/irida'],
     notify  => Service['tomcat'],
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0600',
   }
 
   file { '/etc/irida/plugins':
