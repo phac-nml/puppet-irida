@@ -5,7 +5,7 @@ class irida(
   Boolean $manage_user          = true,
   String  $tomcat_tmp           = '/var/cache/tomcat/temp',
   String  $tomcat_location      = '/opt/tomcat/',
-  String  $tomcat_logs_location = "${tomcat_location}logs",
+  String  $tomcat_logs_location = "${tomcat_location}/logs",
   String  $irida_ip_addr        = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
 
