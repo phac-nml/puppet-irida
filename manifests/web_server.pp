@@ -10,6 +10,7 @@ class irida::web_server (
   String  $ssl_chainbundle_cert = '',
   String  $ssl_cert_private_key = '',
   String  $irida_ip_addr = $ipaddress,
+  String  $irida_url_path = 'irida',
 ) {
 
   ensure_resource('package', 'epel-release', {'ensure' => 'present'})

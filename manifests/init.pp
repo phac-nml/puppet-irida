@@ -8,6 +8,7 @@ class irida(
   String  $tomcat_logs_location = "${tomcat_location}/logs",
   String  $irida_ip_addr        = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+  String  $irida_url_path       = 'irida',
 
   Boolean       $splunk_index_logs       = false,
   String        $splunk_receiver         = 'my-splunk-receiver-example.com',
@@ -95,6 +96,7 @@ class irida(
     ssl_server_cert      => $irida::ssl_server_cert,
     ssl_chainbundle_cert => $irida::ssl_chainbundle_cert,
     ssl_cert_private_key => $irida::ssl_cert_private_key,
+    irida_url_path       => $irida::irida_url_path,
   }
 
   if $manage_user {
