@@ -42,6 +42,7 @@ class irida(
   String $irida_disabled_workflow      = '',
 
   Boolean $use_ssl              = false,
+  Boolean $force_ssl            = false,
   String  $ssl_server_cert      = '',
   String  $ssl_chainbundle_cert = '',
   String  $ssl_cert_private_key = '',
@@ -93,6 +94,7 @@ class irida(
   class {'irida::web_server':
     irida_ip_addr        => $irida::irida_ip_addr,
     apache_use_ssl       => $irida::use_ssl,
+    apache_force_ssl     => $irida::force_ssl,
     ssl_server_cert      => $irida::ssl_server_cert,
     ssl_chainbundle_cert => $irida::ssl_chainbundle_cert,
     ssl_cert_private_key => $irida::ssl_cert_private_key,
