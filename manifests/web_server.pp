@@ -6,6 +6,7 @@
 #   include irida::web_server
 class irida::web_server (
   Boolean $apache_use_ssl = false,
+  Boolean $apache_force_ssl = false,
   String  $ssl_server_cert = '',
   String  $ssl_chainbundle_cert = '',
   String  $ssl_cert_private_key = '',
