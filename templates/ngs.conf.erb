@@ -37,7 +37,7 @@ RequestHeader set X-Forwarded-Proto "https"
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
-	<Location /irida>
+	<Location /<%= @irida_url_path %>>
 	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
 	</Location>
 
@@ -71,7 +71,7 @@ RequestHeader set X-Forwarded-Proto "https"
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
-	<Location /irida>
+	<Location /<%= @irida_url_path %>>
 	    ProxyPass http://<%= @irida_ip_addr %>:8080/irida connectiontimeout=7200 timeout=7200
 	</Location>
 </VirtualHost>
