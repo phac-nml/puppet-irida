@@ -69,6 +69,7 @@ class irida(
 
   String $ncbi_upload_user                                      = 'test',
   String $ncbi_upload_password                                  = 'password',
+  String $ncbi_upload_host                                      = 'localhost',
   String $ncbi_upload_basedirectory                             = 'tmp',
   String $ncbi_upload_namespace                                 = 'IRIDA',
   Integer $ncbi_upload_port                                     = 21,

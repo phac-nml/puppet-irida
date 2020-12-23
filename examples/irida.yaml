@@ -51,6 +51,7 @@ irida::irida_scheduled_threads: 2
 
 irida::ncbi_upload_user: 'test'
 irida::ncbi_upload_password: 'password'
+irida::ncbi_upload_host: 'localhost'
 irida::ncbi_upload_basedirectory: 'tmp'
 irida::ncbi_upload_namespace: 'IRIDA'
 irida::ncbi_upload_port: 21
