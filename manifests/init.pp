@@ -6,7 +6,7 @@ class irida(
   String  $tomcat_tmp           = '/var/cache/tomcat/temp',
   String  $tomcat_location      = '/opt/tomcat/',
   String  $tomcat_logs_location = "${tomcat_location}/logs",
-  String  $java_heap_memory     = '1024',
+  Integer $java_heap_memory     = 1024,
   String  $irida_ip_addr        = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
   String  $irida_url_path       = 'irida',
