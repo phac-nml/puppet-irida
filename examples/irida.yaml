@@ -6,6 +6,7 @@ irida::tomcat_tmp: "/opt/tomcat/temp"
 irida::tomcat_user: 'tomcat'
 irida::tomcat_group: 'grp_tomcat'
 irida::manage_user: true
+irida::java_heap_memory: 2048
 irida::irida_ip_addr: irida.ca
 irida::make_db: true
 irida::db_user: irida
