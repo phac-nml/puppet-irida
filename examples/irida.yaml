@@ -8,6 +8,7 @@ irida::tomcat_group: 'grp_tomcat'
 irida::manage_user: true
 irida::java_heap_memory: 2048
 irida::irida_ip_addr: irida.ca
+irida::server_base_url: 'irida.ca'
 irida::make_db: true
 irida::db_user: irida
 irida::db_password: REALLYstrongPASSWORDsoGOOD!!!!1!
