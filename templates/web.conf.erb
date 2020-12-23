@@ -1,10 +1,10 @@
 # The externally visible URL for accessing this instance of IRIDA. This key is
 # used by the e-mailer when sending out e-mail notifications (password resets,
 # for example) and embeds this URL directly in the body of the e-mail.
-<% if @use_ssl %>
-server.base.url=https://<%= @irida_ip_addr %>/<%= @irida_url_path %>
+<% if @use_ssl and @force_ssl  %>
+server.base.url=https://<%= @server_base_url %>/<%= @irida_url_path %>
 <% else %>
-server.base.url=http://<%= @irida_ip_addr %>/<%= @irida_url_path %>
+server.base.url=http://<%= @server_base_url %>/<%= @irida_url_path %>
 <% end %>
 
 # Mail server configuration settings
