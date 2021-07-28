@@ -5,13 +5,19 @@ class irida(
   Boolean $manage_user          = true,
   String  $tomcat_tmp           = '/var/cache/tomcat/temp',
   String  $tomcat_location      = '/opt/tomcat/',
-  String  $tomcat_logs_location = "${tomcat_location}logs",
+  String  $tomcat_logs_location = "${tomcat_location}/logs",
+  Integer $java_heap_memory     = 1024,
   String  $irida_ip_addr        = 'localhost',
+  String  $server_base_url      = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
   String  $war_url              = "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
+  String  $irida_url_path       = 'irida',
+  String  $linker_script        = 'ngsArchiveLinker.pl',
+
 
   Boolean       $splunk_index_logs       = false,
   String        $splunk_receiver         = 'my-splunk-receiver-example.com',
+  String        $splunk_index            = '',
   Array[String] $splunk_target_log_files = [
     "${tomcat_logs_location}/catalina.out"
   ],
@@ -42,6 +48,7 @@ class irida(
   String $irida_disabled_workflow      = '',
 
   Boolean $use_ssl              = false,
+  Boolean $force_ssl            = false,
   String  $ssl_server_cert      = '',
   String  $ssl_chainbundle_cert = '',
   String  $ssl_cert_private_key = '',
@@ -66,6 +73,7 @@ class irida(
 
   String $ncbi_upload_user                                      = 'test',
   String $ncbi_upload_password                                  = 'password',
+  String $ncbi_upload_host                                      = 'localhost',
   String $ncbi_upload_basedirectory                             = 'tmp',
   String $ncbi_upload_namespace                                 = 'IRIDA',
   Integer $ncbi_upload_port                                     = 21,
@@ -93,9 +101,11 @@ class irida(
   class {'irida::web_server':
     irida_ip_addr        => $irida::irida_ip_addr,
     apache_use_ssl       => $irida::use_ssl,
+    apache_force_ssl     => $irida::force_ssl,
     ssl_server_cert      => $irida::ssl_server_cert,
     ssl_chainbundle_cert => $irida::ssl_chainbundle_cert,
     ssl_cert_private_key => $irida::ssl_cert_private_key,
+    irida_url_path       => $irida::irida_url_path,
   }
 
   if $manage_user {
@@ -143,6 +153,7 @@ class irida(
   }
 
 
+
   tomcat::war { 'irida.war':
     war_source    => $war_url,
     catalina_base => '/opt/tomcat/',
@@ -166,7 +177,7 @@ class irida(
 
   tomcat::setenv::entry { 'java_opts':
     param         => 'JAVA_OPTS',
-    value         => "'-Dspring.profiles.active=${profile} -Dirida.db.profile=prod'",
+    value         => "'-Dspring.profiles.active=${profile} -Dirida.db.profile=prod -Xmx${java_heap_memory}m'",
     catalina_home => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
@@ -187,6 +198,9 @@ class irida(
     path    => '/etc/irida/irida.conf',
     require => File['/etc/irida'],
     notify  => Service['tomcat'],
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0600',
   }
 
   file { 'web.conf':
@@ -195,6 +209,9 @@ class irida(
     path    => '/etc/irida/web.conf',
     require => File['/etc/irida'],
     notify  => Service['tomcat'],
+    owner   => $tomcat_user,
+    group   => $tomcat_group,
+    mode    => '0600',
   }
 
   file { '/etc/irida/plugins':
@@ -239,7 +256,7 @@ class irida(
         provider => 'shell',
         creates  => $dir,
         user     => $irida::tomcat_user,
-        require  => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war'],User[$tomcat_user]],
+        require  => [Tomcat::Install[$tomcat_location],Tomcat::War["${irida_url_path}.war"],User[$tomcat_user]],
       }
     }
   }
@@ -249,7 +266,7 @@ class irida(
       path    => $irida::data_directory,
       owner   => $tomcat_user,
       group   => $tomcat_group,
-      require => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war']]
+      require => [Tomcat::Install[$tomcat_location],Tomcat::War["${irida_url_path}.war"]]
     }
 
     file { 'irida ref':
@@ -305,11 +322,15 @@ class irida(
 # Splunk Logging
 
   if $splunk_index_logs {
-    class { '::splunk::params':
-        server => $splunk_receiver,
+    if !defined(Class[::splunk::params]) {
+      class {'::splunk::params':
+          server => $splunk_receiver,
+      }
     }
 
-    include ::splunk::forwarder
+    if !defined(Class[::splunk::forwarder]) {
+      include ::splunk::forwarder
+    }
 
     $splunk_target_log_files.each |String $log_file| {
       @splunkforwarder_input { "monitor_${log_file}":
@@ -317,6 +338,14 @@ class irida(
         setting => 'sourcetype',
         value   => 'irida',
         tag     => 'splunkX_forwarder'
+      }
+      if !empty($splunk_index) {
+        @splunkforwarder_input { "set_index_${log_file}":
+          section => "monitor://${log_file}",
+          setting => 'index',
+          value   => $splunk_index,
+          tag     => 'splunk_forwarder'
+        }
       }
     }
   }

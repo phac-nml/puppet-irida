@@ -72,6 +72,9 @@ jdbc.pool.maxIdle=10
 security.password.expiry=<%= @security_password_expiry %>
 
 
+# Name of command line linker to appear when selecting in export dropdown
+ngsarchive.linker.script=<%= @linker_script %>
+
 ###############################################################################
 # Execution Manager configuration Galaxy. This is how IRIDA should connect to #
 # the internally managed instance of Galaxy for executing workflows.          #
@@ -132,30 +135,6 @@ irida.analysis.cleanup.days=<%= @irida_analysis_cleanup_days %>
 irida.scheduled.subscription.cron=<%= @irida_scheduled_subscription_cron %>
 irida.scheduled.threads=<%= @irida_scheduled_threads %>
 
-#################################
-# NCBI SRA Export configuration #
-#################################
-#Host to upload ncbi exports
-
-
-ncbi.upload.host=localhost
-#FTP Username and password for bulk SRA uploads
-ncbi.upload.user=<%= @ncbi_upload_user %>
-ncbi.upload.password=<%= @ncbi_upload_password %>
-#base directory in which to create SRA submissions
-ncbi.upload.baseDirectory=<%= @ncbi_upload_basedirectory %>
-#port for ftp upload
-ncbi.upload.port=<%= @ncbi_upload_port %>
-#Default namespace to preface file identifiers
-ncbi.upload.namespace=<%= @ncbi_upload_namespace %>
-
-# Adjusts Control Keep Alive Timeout value, which can assist in keeping an FTP connection alive for long file transfers.
-# See <https://commons.apache.org/proper/commons-ndocs/org/apache/commons/net/ftp/FTPClient.html>.
-ncbi.upload.controlKeepAliveTimeoutSeconds=<%= @ncbi_upload_controlkeepalivetimeoutseconds %>
-ncbi.upload.controlKeepAliveReplyTimeoutMilliseconds=<%= @ncbi_upload_controlkeepalivereplytimeoutmilliseconds %>
-# Adjusts whether or not to use active vs passive mode for the FTP connection.
-# Passive mode is recommended if you are behind a firewall/NAT.
-ncbi.upload.ftp.passive=<%= @ncbi_upload_ftp_passive %>
 
 # A list of workflow types to disable from display in the web interface
 # For example `irida.workflow.types.disabled=ASSEMBLY_ANNOTATION,ASSEMBLY_ANNOTATION_COLLECTION,BIO_HANSEL,MLST_MENTALIST,REFSEQ_MASHER,SISTR_TYPING,PHYLOGENOMICS`

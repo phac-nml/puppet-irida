@@ -6,7 +6,9 @@ irida::tomcat_tmp: "/opt/tomcat/temp"
 irida::tomcat_user: 'tomcat'
 irida::tomcat_group: 'grp_tomcat'
 irida::manage_user: true
+irida::java_heap_memory: 2048
 irida::irida_ip_addr: irida.ca
+irida::server_base_url: 'irida.ca'
 irida::make_db: true
 irida::db_user: irida
 irida::db_password: REALLYstrongPASSWORDsoGOOD!!!!1!
@@ -17,7 +19,7 @@ irida::sequence_directory: "%{lookup('irida::data_directory')}/sequence"
 irida::reference_directory: "%{lookup('irida::data_directory')}/reference"
 irida::output_directory: "%{lookup('irida::data_directory')}/output"
 irida::assembly_directory: "%{lookup('irida::data_directory')}/assembly"
-
+irida::linker_script: 'ngsArchiveLinker.pl'
 irida::galaxy_execution_url: 'http://galaxy.ca'
 irida::galaxy_execution_apikey: '6ac7f311adc7ad4144835b1d415d9d51'
 irida::galaxy_execution_email: 'irida2galaxy@fake.ca'
@@ -51,6 +53,7 @@ irida::irida_scheduled_threads: 2
 
 irida::ncbi_upload_user: 'test'
 irida::ncbi_upload_password: 'password'
+irida::ncbi_upload_host: 'localhost'
 irida::ncbi_upload_basedirectory: 'tmp'
 irida::ncbi_upload_namespace: 'IRIDA'
 irida::ncbi_upload_port: 21
