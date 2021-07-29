@@ -10,8 +10,10 @@ class irida(
   String  $irida_ip_addr        = 'localhost',
   String  $server_base_url      = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
+  String  $war_url              = "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
   String  $irida_url_path       = 'irida',
   String  $linker_script        = 'ngsArchiveLinker.pl',
+
 
   Boolean       $splunk_index_logs       = false,
   String        $splunk_receiver         = 'my-splunk-receiver-example.com',
@@ -20,11 +22,12 @@ class irida(
     "${tomcat_logs_location}/catalina.out"
   ],
 
-  Boolean $make_db     = true,
-  String  $db_user     = 'irida',
-  String  $db_name     = 'irida',
-  String  $db_password = 'irida',
-  String  $db_host     = '127.0.0.1',
+  Boolean $make_db            = true,
+  String  $db_user            = 'irida',
+  String  $db_name            = 'irida',
+  String  $db_password        = 'irida',
+  String  $db_host            = '127.0.0.1',
+  String  $db_backup_location = '/tmp/',
 
   Integer $file_upload_max_size        = 16106127360,
   Integer $file_processing_core        = 4,
@@ -151,8 +154,9 @@ class irida(
   }
 
 
-  tomcat::war { "${irida_url_path}.war":
-    war_source    => "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
+
+  tomcat::war { 'irida.war':
+    war_source    => $war_url,
     catalina_base => '/opt/tomcat/',
     user          => $tomcat_user,
     group         => $tomcat_group,
@@ -227,6 +231,22 @@ class irida(
     path    => '/etc/irida/analytics/google-analytics.html',
     require => File['/etc/irida/analytics'],
     notify  => Service['tomcat'],
+  }
+
+  file { '/etc/irida/irida_upgrade.config':
+    ensure  => 'present',
+    content => template('irida/irida_upgrade.config.erb'),
+    owner   => root,
+    group   => root,
+    mode    => '0400'
+  }
+
+  file { '/etc/my.cnf':
+    ensure  => 'present',
+    content => template('irida/my.cnf.erb'),
+    owner   => root,
+    group   => root,
+    mode    => '0600'
   }
 
   if $nfs_based {

@@ -14,6 +14,7 @@ irida::db_user: irida
 irida::db_password: REALLYstrongPASSWORDsoGOOD!!!!1!
 irida::db_name: irida
 irida::db_host: 127.0.0.1
+irida::db_backup_location: '/tmp'
 irida::nfs_based: false
 irida::sequence_directory: "%{lookup('irida::data_directory')}/sequence"
 irida::reference_directory: "%{lookup('irida::data_directory')}/reference"
