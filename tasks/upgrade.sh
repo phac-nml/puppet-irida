@@ -2,7 +2,7 @@
 
 set -e
 
-. /irida_upgrade.config
+. /etc/irida/irida_upgrade.config
 
 echo "Stopping services..."
 systemctl stop puppet

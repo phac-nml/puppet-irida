@@ -233,7 +233,7 @@ class irida(
     notify  => Service['tomcat'],
   }
 
-  file { '/irida_upgrade.config':
+  file { '/etc/irida/irida_upgrade.config':
     ensure  => 'present',
     content => template('irida/irida_upgrade.config.erb'),
     owner   => root,
