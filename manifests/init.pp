@@ -15,13 +15,6 @@ class irida(
   String  $linker_script        = 'ngsArchiveLinker.pl',
 
 
-  Boolean       $splunk_index_logs       = false,
-  String        $splunk_receiver         = 'my-splunk-receiver-example.com',
-  String        $splunk_index            = '',
-  Array[String] $splunk_target_log_files = [
-    "${tomcat_logs_location}/catalina.out"
-  ],
-
   Boolean $make_db            = true,
   String  $db_user            = 'irida',
   String  $db_name            = 'irida',
@@ -326,36 +319,5 @@ class irida(
     owner   => $tomcat_user,
     group   => $tomcat_group,
     require => Tomcat::Install[$tomcat_location]
-  }
-
-# Splunk Logging
-
-  if $splunk_index_logs {
-    if !defined(Class[::splunk::params]) {
-      class {'::splunk::params':
-          server => $splunk_receiver,
-      }
-    }
-
-    if !defined(Class[::splunk::forwarder]) {
-      include ::splunk::forwarder
-    }
-
-    $splunk_target_log_files.each |String $log_file| {
-      @splunkforwarder_input { "monitor_${log_file}":
-        section => "monitor://${log_file}",
-        setting => 'sourcetype',
-        value   => 'irida',
-        tag     => 'splunkX_forwarder'
-      }
-      if !empty($splunk_index) {
-        @splunkforwarder_input { "set_index_${log_file}":
-          section => "monitor://${log_file}",
-          setting => 'index',
-          value   => $splunk_index,
-          tag     => 'splunk_forwarder'
-        }
-      }
-    }
   }
 }
