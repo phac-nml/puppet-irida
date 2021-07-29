@@ -22,11 +22,12 @@ class irida(
     "${tomcat_logs_location}/catalina.out"
   ],
 
-  Boolean $make_db     = true,
-  String  $db_user     = 'irida',
-  String  $db_name     = 'irida',
-  String  $db_password = 'irida',
-  String  $db_host     = '127.0.0.1',
+  Boolean $make_db            = true,
+  String  $db_user            = 'irida',
+  String  $db_name            = 'irida',
+  String  $db_password        = 'irida',
+  String  $db_host            = '127.0.0.1',
+  String  $db_backup_location = '/tmp/',
 
   Integer $file_upload_max_size        = 16106127360,
   Integer $file_processing_core        = 4,
@@ -238,6 +239,14 @@ class irida(
     owner   => root,
     group   => root,
     mode    => '0400'
+  }
+
+  file { '/etc/my.cnf':
+    ensure  => 'present',
+    content => template('irida/my.cnf.erb'),
+    owner   => root,
+    group   => root,
+    mode    => '0600'
   }
 
   if $nfs_based {
