@@ -38,7 +38,7 @@ include '::irida'
 
 The `upgrade` task included in this module can be used to upgrade the IRIDA
 instance to a newer version. This task accepts no parameters and instead
-relies on the file managed by the module located at `/irida_upgrade.config`
+relies on the file managed by the module located at `/etc/irida/irida_upgrade.config`
 on the target host, allowing for the upgrade process to automatically retrieve
 credentials and other information that it requires.
 
@@ -53,9 +53,9 @@ In order to perform a system upgrade using the `upgrade` task and Puppet Bolt:
 The upgrade task performs the following actions:
 
 1. Stop the `puppet` and `tomcat` services
-2. Dump the database to a backup file located at `~tomcat/irida-<date>.dbbackup`
+2. Dump the database to a backup file located at `/tmp/irida-<date>.dbbackup` by default 
 3. Delete the old `irida.war` file and replaces it with the version specified
-4. Start the `puppet` and `tomcat` services
+4. Start the `puppet` services
 
 ## Limitations
 
