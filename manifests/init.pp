@@ -148,7 +148,7 @@ class irida(
 
 
 
-  tomcat::war { 'irida.war':
+  tomcat::war { "${irida_url_path}.war":
     war_source    => $war_url,
     catalina_base => '/opt/tomcat/',
     user          => $tomcat_user,
