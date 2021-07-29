@@ -23,6 +23,8 @@ sudo -u $tomcat_user rm $tomcat_location/webapps/irida.war
 sudo -u $tomcat_user curl -o $tomcat_location/webapps/irida.war $war_url
 
 echo "Starting services..."
+#only restarting puppet since it will start tomcat for us
+#want to avoid a potential race condition
 systemctl start puppet
 
 echo "done"
