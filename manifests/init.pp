@@ -258,7 +258,7 @@ class irida(
         provider => 'shell',
         creates  => $dir,
         user     => $irida::tomcat_user,
-        require  => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war'],User[$tomcat_user]],
+        require  => [Tomcat::Install[$tomcat_location],Tomcat::War["${irida_url_path}.war"],User[$tomcat_user]],
       }
     }
   }
@@ -268,7 +268,7 @@ class irida(
       path    => $irida::data_directory,
       owner   => $tomcat_user,
       group   => $tomcat_group,
-      require => [Tomcat::Install[$tomcat_location],Tomcat::War['irida.war']]
+      require => [Tomcat::Install[$tomcat_location],Tomcat::War["${irida_url_path}.war"]]
     }
 
     file { 'irida ref':
