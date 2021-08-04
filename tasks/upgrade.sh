@@ -19,8 +19,11 @@ chown $tomcat_user:$tomcat_group /tmp/irida.dbbackup
 sudo -u $tomcat_user mv /tmp/irida.dbbackup $db_backup_location/irida-$(date  +"%y-%m-%d-%T").dbbackup
 
 echo "Replacing WAR file..."
-sudo -u $tomcat_user rm $tomcat_location/webapps/irida.war
-sudo -u $tomcat_user curl -o $tomcat_location/webapps/irida.war $war_url
+#removing both expanded folder and war file itself
+sudo -u $tomcat_user rm -rf $tomcat_location/webapps/$irida_url_path
+sudo -u $tomcat_user rm $tomcat_location/webapps/$irida_url_path'.war'
+#downloading newer version
+sudo -u $tomcat_user curl -L -o $tomcat_location/webapps/$irida_url_path'.war' $war_url
 
 echo "Starting services..."
 #only restarting puppet since it will start tomcat for us
