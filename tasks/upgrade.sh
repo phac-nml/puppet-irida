@@ -5,12 +5,12 @@ set -e
 . /etc/irida/irida_upgrade.config
 
 if [[ -z "${tomcat_location}" ]]; then
-  echo "tomcat_location not defined. Please ensure set in /etc/irida/irida_upgrade.config."
+  echo "Value for tomcat_location is not set. Please ensure the value is set in /etc/irida/irida_upgrade.config."
   exit 1
 fi
 
 if [[ -z "${irida_url_path}" ]]; then
-  echo "irida_url_path not defined. Please ensure set in /etc/irida/irida_upgrade.config."
+  echo "Value for irida_url_path is not set. Please ensure the value is set in /etc/irida/irida_upgrade.config."
   exit 1
 fi
 
