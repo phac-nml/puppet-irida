@@ -4,6 +4,16 @@ set -e
 
 . /etc/irida/irida_upgrade.config
 
+if [[ -z "${tomcat_location}" ]]; then
+  echo "tomcat_location not defined. Please ensure set in /etc/irida/irida_upgrade.config."
+  exit 1
+fi
+
+if [[ -z "${irida_url_path}" ]]; then
+  echo "irida_url_path not defined. Please ensure set in /etc/irida/irida_upgrade.config."
+  exit 1
+fi
+
 echo "Stopping services..."
 systemctl stop puppet
 systemctl stop tomcat
