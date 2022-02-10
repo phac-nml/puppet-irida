@@ -1,18 +1,4 @@
 <% if @apache_use_ssl -%>
-<% if @apache_force_ssl -%>
-# Redirect Client HTTP traffic to HTTPS
-LoadModule rewrite_module modules/mod_rewrite.so
-RewriteEngine On 
-RewriteCond %{HTTPS}  !=on 
-RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L] 
-
-# Redirect HTTP traffic after proxy to HTTPS
-Header edit Location ^http://(.*)$ https://$1
-
-# Make sure links are generated in HTTPS
-RequestHeader set X-Forwarded-Proto "https"
-<% end -%>
-
 <VirtualHost *:443>
 	ServerName 		https://<%= @irida_ip_addr %>
 	ErrorLog 		/var/log/httpd/irida.ajp.error.log
@@ -35,6 +21,9 @@ RequestHeader set X-Forwarded-Proto "https"
 	ProxyPass 			/ 	http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %>
 	ProxyPassReverse 	/ 	http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %>
 
+	RequestHeader set X-Forwarded-Proto https
+	RequestHeader set X-Forwarded-Port 443
+
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
 	<Location /<%= @irida_url_path %>>
@@ -44,14 +33,15 @@ RequestHeader set X-Forwarded-Proto "https"
 	# Custom error pages
 	ProxyPass /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
 	ProxyPassReverse /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
-	
 </VirtualHost>
 <% end %>
-<% if !@apache_use_ssl or !@apache_force_ssl -%>
 <VirtualHost *:80>
 	ServerName		http://<%= @irida_ip_addr %>
 	ErrorLog 		/var/log/httpd/irida.ajp.error.log
 	CustomLog 		/var/log/httpd/irida.ajp.log combined
+<% if @apache_force_ssl -%>
+	Redirect / https://<%= @irida_ip_addr %>
+<% else %>
 	ErrorDocument	503	/proxy-error/503.html
 
 	<Proxy *>
@@ -65,14 +55,17 @@ RequestHeader set X-Forwarded-Proto "https"
 	ProxyPass			/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 	ProxyPassReverse	/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 
+	RequestHeader set X-Forwarded-Proto http
+	RequestHeader set X-Forwarded-Port 80
+
 	<Location />
-	    ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
+		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
 	</Location>
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
 	<Location /<%= @irida_url_path %>>
-	    ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
+		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
 	</Location>
-</VirtualHost>
 <% end -%>
+</VirtualHost>
