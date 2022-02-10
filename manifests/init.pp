@@ -179,9 +179,8 @@ class irida(
     notify        => Service['tomcat'],
   }
 
-  if $use_ssl {
 
-    tomcat::config::server::valve { 'Remote.IpValve':
+  tomcat::config::server::valve { 'Remote.IpValve':
       valve_ensure          => 'present',
       parent_host           => 'localhost',
       catalina_base         => $tomcat_location,
@@ -189,8 +188,8 @@ class irida(
       additional_attributes => {'remoteIpHeader' => 'x-forwarded-for',
                                 'protocolHeader' => 'x-forwarded-proto'},
       notify                => Service['tomcat']
-    }
   }
+
 
   file { '/etc/irida':
     ensure  => 'directory',
