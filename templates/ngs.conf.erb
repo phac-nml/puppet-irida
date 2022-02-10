@@ -1,16 +1,7 @@
 <% if @apache_use_ssl -%>
 <% if @apache_force_ssl -%>
-# Redirect Client HTTP traffic to HTTPS
-LoadModule rewrite_module modules/mod_rewrite.so
-RewriteEngine On 
-RewriteCond %{HTTPS}  !=on 
-RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L] 
-
 # Redirect HTTP traffic after proxy to HTTPS
 Header edit Location ^http://(.*)$ https://$1
-
-# Make sure links are generated in HTTPS
-RequestHeader set X-Forwarded-Proto "https"
 <% end -%>
 
 <VirtualHost *:443>
@@ -34,6 +25,9 @@ RequestHeader set X-Forwarded-Proto "https"
 	ProxyPreserveHost 	On
 	ProxyPass 			/ 	http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %>
 	ProxyPassReverse 	/ 	http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %>
+
+	RequestHeader set X-Forwarded-Proto https
+	RequestHeader set X-Forwarded-Port 443
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
