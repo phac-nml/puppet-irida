@@ -34,10 +34,6 @@
 	<Location /<%= @irida_url_path %>>
 		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
 	</Location>
-
-	# Custom error pages
-	ProxyPass /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
-	ProxyPassReverse /proxy-error http://<%= @irida_ip_addr %>:81/proxy-error
 </VirtualHost>
 <% end %>
 <VirtualHost *:80>
