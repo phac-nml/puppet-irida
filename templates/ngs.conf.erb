@@ -22,12 +22,17 @@
 	ProxyPass			/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 	ProxyPassReverse	/proxy-error	http://<%= @irida_ip_addr %>:81/proxy-error
 
+
 	RequestHeader set X-Forwarded-Proto https
 	RequestHeader set X-Forwarded-Port 443
+
 
 	<Location />
 		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
 	</Location>
+
+  SetOutputFilter DEFLATE
+
 
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
@@ -58,6 +63,8 @@
 
 	RequestHeader set X-Forwarded-Proto http
 	RequestHeader set X-Forwarded-Port 80
+
+  SetOutputFilter DEFLATE
 
 	<Location />
 		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
