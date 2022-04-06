@@ -2,7 +2,7 @@ irida::irida_version: '20.05'
 irida::profile: 'prod'
 irida::data_directory: "/opt/irida"
 irida::tomcat_location: '/opt/tomcat/'
-irida::tomcat_download_url: ''
+irida::tomcat_download_url: 'https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz'
 irida::tomcat_tmp: "/opt/tomcat/temp"
 irida::tomcat_user: 'tomcat'
 irida::tomcat_group: 'grp_tomcat'
