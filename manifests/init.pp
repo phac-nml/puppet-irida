@@ -121,7 +121,7 @@ class irida(
   }
 
   tomcat::install { $tomcat_location:
-    source_url   => 'https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
+    source_url   => 'https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz',
     user         => $tomcat_user,
     group        => $tomcat_group,
     manage_user  => false,
