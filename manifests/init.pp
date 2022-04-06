@@ -3,6 +3,7 @@ class irida(
   String  $tomcat_user          = 'tomcat',
   String  $tomcat_group         = 'tomcat',
   Boolean $manage_user          = true,
+  String  $tomcat_download_url  = 'https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz',
   String  $tomcat_tmp           = '/var/cache/tomcat/temp',
   String  $tomcat_location      = '/opt/tomcat/',
   String  $tomcat_logs_location = "${tomcat_location}/logs",
@@ -121,7 +122,7 @@ class irida(
   }
 
   tomcat::install { $tomcat_location:
-    source_url   => 'https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
+    source_url   => $tomcat_download_url,
     user         => $tomcat_user,
     group        => $tomcat_group,
     manage_user  => false,
