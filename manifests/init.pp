@@ -15,7 +15,6 @@ class irida(
   String  $irida_url_path       = 'irida',
   String  $linker_script        = 'ngsArchiveLinker.pl',
 
-
   Boolean $make_db            = true,
   String  $db_user            = 'irida',
   String  $db_name            = 'irida',
@@ -65,6 +64,10 @@ class irida(
   String  $irida_scheduled_subscription_cron  = '0 0 0 * * *',
   Integer $security_password_expiry           = -1,
   Integer $irida_scheduled_threads            = 2,
+
+  String  $jwk_key_store_file = '',
+  String  $jwk_key_store_path = '/etc/irida/jwk-key-store.jks',
+  String  $jwk_key_store_password = 'NOTSECRETATALL',
 
   String $ncbi_upload_user                                      = 'test',
   String $ncbi_upload_password                                  = 'password',
@@ -220,6 +223,34 @@ class irida(
     mode    => '0600',
   }
 
+  # if given a jwk base64 binary file, we will use it
+  # otherwise we will auto generate one
+  if $jwk_key_store_file != '' {
+    file { $jwk_key_store_path:
+      ensure  => 'present',
+      content => base64('decode', $jwk_key_store_file),
+      path    => $jwk_key_store_path,
+      require => File['/etc/irida'],
+      notify  => Service['tomcat'],
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      mode    => '0600',
+    }
+  }
+  else {
+    exec { 'Auto-generate JWK Key store file':
+      command  => "keytool -genkeypair -alias JWK -keyalg RSA -noprompt -dname 'CN=${server_base_url}, OU=ID, O=IRIDA, L=IRIDA,S=IRIDA,\
+       C=CA' -keystore ${jwk_key_store_path} -validity 3650 -storepass ${jwk_key_store_password} -keypass ${jwk_key_store_password}\
+        -storetype PKCS12 && chown ${tomcat_user}:${tomcat_group} ${jwk_key_store_path}",
+      provider => 'shell',
+      creates  => $jwk_key_store_path,
+      user     => 'root',
+      notify   => Service['tomcat'],
+      require  => File['/etc/irida'],
+      unless   => "test -d ${jwk_key_store_path}",
+    }
+  }
+
   file { '/etc/irida/plugins':
     ensure  => 'directory',
     require => File['/etc/irida'],
@@ -314,7 +345,6 @@ class irida(
       group   => $tomcat_group,
       require => File[$irida::data_directory]
     }
-
 
     file { 'tomcat temp':
       ensure  => 'directory',
