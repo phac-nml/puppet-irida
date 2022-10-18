@@ -71,6 +71,10 @@ jdbc.pool.maxIdle=10
 ## Configure the password expiry time in days.  A value of -1 will set no expiry.
 security.password.expiry=<%= @security_password_expiry %>
 
+# The location of the Java Key Store
+oauth2.jwk.key-store=<%= @jwk_key_store_path %>
+# The Java Key Store password
+oauth2.jwk.key-store-password=<%= @jwk_key_store_password %>
 
 # Name of command line linker to appear when selecting in export dropdown
 ngsarchive.linker.script=<%= @linker_script %>

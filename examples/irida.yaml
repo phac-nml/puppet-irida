@@ -50,6 +50,9 @@ irida::irida_workflow_max_running: 4
 irida::irida_analysis_cleanup_days: 15
 irida::irida_scheduled_subscription_cron: '0 0 0 * * *'
 irida::security_password_expiry: -1
+irida::jwk_key_store_path: '/etc/irida/jwk-key-store.jks'
+irida::jwk_key_store_file: 'BASE64_OF_BINARY_ENCRYPTED_AS_WELL'
+irida::jwk_key_store_password: 'NOTSECRETATALL'
 irida::irida_scheduled_threads: 2
 
 
