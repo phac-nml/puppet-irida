@@ -229,7 +229,6 @@ class irida(
     file { $jwk_key_store_path:
       ensure  => 'present',
       content => base64('decode', $jwk_key_store_file),
-      path    => $jwk_key_store_path,
       require => File['/etc/irida'],
       notify  => Service['tomcat'],
       owner   => $tomcat_user,
@@ -239,15 +238,16 @@ class irida(
   }
   else {
     exec { 'Auto-generate JWK Key store file':
-      command  => "keytool -genkeypair -alias JWK -keyalg RSA -noprompt -dname 'CN=${server_base_url}, OU=ID, O=IRIDA, L=IRIDA,S=IRIDA,\
-       C=CA' -keystore ${jwk_key_store_path} -validity 3650 -storepass ${jwk_key_store_password} -keypass ${jwk_key_store_password}\
+      command     => "keytool -genkeypair -alias JWK -keyalg RSA -noprompt -dname \
+       'CN=${server_base_url}, OU=ID, O=IRIDA, L=IRIDA,S=IRIDA,\
+       C=CA' -keystore ${jwk_key_store_path} -validity 3650 -storepass '\$PASS' -keypass '\$PASS' \
         -storetype PKCS12 && chown ${tomcat_user}:${tomcat_group} ${jwk_key_store_path}",
-      provider => 'shell',
-      creates  => $jwk_key_store_path,
-      user     => 'root',
-      notify   => Service['tomcat'],
-      require  => File['/etc/irida'],
-      unless   => "test -d ${jwk_key_store_path}",
+      provider    => 'shell',
+      environment => ["PASS=${jwk_key_store_password}"],
+      creates     => $jwk_key_store_path,
+      user        => 'root',
+      notify      => Service['tomcat'],
+      require     => File['/etc/irida'],
     }
   }
 
