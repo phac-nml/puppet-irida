@@ -3,6 +3,7 @@ class irida(
   String  $tomcat_user          = 'tomcat',
   String  $tomcat_group         = 'tomcat',
   Boolean $manage_user          = true,
+  String  $tomcat_download_url  = 'https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz',
   String  $tomcat_tmp           = '/var/cache/tomcat/temp',
   String  $tomcat_location      = '/opt/tomcat/',
   String  $tomcat_logs_location = "${tomcat_location}/logs",
@@ -13,7 +14,6 @@ class irida(
   String  $war_url              = "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
   String  $irida_url_path       = 'irida',
   String  $linker_script        = 'ngsArchiveLinker.pl',
-
 
   Boolean $make_db            = true,
   String  $db_user            = 'irida',
@@ -64,6 +64,10 @@ class irida(
   String  $irida_scheduled_subscription_cron  = '0 0 0 * * *',
   Integer $security_password_expiry           = -1,
   Integer $irida_scheduled_threads            = 2,
+
+  String  $jwk_key_store_file = '',
+  String  $jwk_key_store_path = '/etc/irida/jwk-key-store.jks',
+  String  $jwk_key_store_password = 'NOTSECRETATALL',
 
   String $ncbi_upload_user                                      = 'test',
   String $ncbi_upload_password                                  = 'password',
@@ -121,7 +125,7 @@ class irida(
   }
 
   tomcat::install { $tomcat_location:
-    source_url   => 'https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.55/bin/apache-tomcat-8.5.55.tar.gz',
+    source_url   => $tomcat_download_url,
     user         => $tomcat_user,
     group        => $tomcat_group,
     manage_user  => false,
@@ -219,6 +223,34 @@ class irida(
     mode    => '0600',
   }
 
+  # if given a jwk base64 binary file, we will use it
+  # otherwise we will auto generate one
+  if $jwk_key_store_file != '' {
+    file { $jwk_key_store_path:
+      ensure  => 'present',
+      content => base64('decode', $jwk_key_store_file),
+      require => File['/etc/irida'],
+      notify  => Service['tomcat'],
+      owner   => $tomcat_user,
+      group   => $tomcat_group,
+      mode    => '0600',
+    }
+  }
+  else {
+    exec { 'Auto-generate JWK Key store file':
+      command     => "keytool -genkeypair -alias JWK -keyalg RSA -noprompt -dname \
+       'CN=${server_base_url}, OU=ID, O=IRIDA, L=IRIDA,S=IRIDA,\
+       C=CA' -keystore ${jwk_key_store_path} -validity 3650 -storepass '\$PASS' -keypass '\$PASS' \
+        -storetype PKCS12 && chown ${tomcat_user}:${tomcat_group} ${jwk_key_store_path}",
+      provider    => 'shell',
+      environment => ["PASS=${jwk_key_store_password}"],
+      creates     => $jwk_key_store_path,
+      user        => 'root',
+      notify      => Service['tomcat'],
+      require     => File['/etc/irida'],
+    }
+  }
+
   file { '/etc/irida/plugins':
     ensure  => 'directory',
     require => File['/etc/irida'],
@@ -313,7 +345,6 @@ class irida(
       group   => $tomcat_group,
       require => File[$irida::data_directory]
     }
-
 
     file { 'tomcat temp':
       ensure  => 'directory',
