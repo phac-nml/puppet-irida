@@ -8,7 +8,7 @@ class irida::database (
 ){
 
   if $make_db {
-    ensure_resource('package', 'epel-release', {'ensure' => 'present'})
+    ensure_packages(['epel-release'], {'ensure' => 'present'})
 
     package { 'mariadb-server':
       ensure  => 'present',
