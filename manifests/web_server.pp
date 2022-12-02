@@ -14,7 +14,7 @@ class irida::web_server (
   String  $irida_url_path = 'irida',
 ) {
 
-  ensure_resource('package', 'epel-release', {'ensure' => 'present'})
+  ensure_packages(['epel-release'], {'ensure' => 'present'})
 
   package { 'mod_ssl':
     ensure => 'present'
