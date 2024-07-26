@@ -143,10 +143,11 @@ class irida(
     mode    => '0644',
     content => template('irida/tomcat.service.erb'),
     require => Tomcat::Install[$tomcat_location],
-  } -> Class['systemd::systemctl::daemon_reload']
+  }
 
   service { 'tomcat':
     ensure    => 'running',
+    enable    => true,
     subscribe => File['/etc/systemd/system/tomcat.service'],
   }
 
