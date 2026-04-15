@@ -9,6 +9,7 @@ class irida(
   String  $tomcat_logs_location = "${tomcat_location}/logs",
   Integer $java_heap_memory     = 1024,
   String  $irida_ip_addr        = 'localhost',
+  Integer $irida_api_timeout    = 14400,
   String  $server_base_url      = 'localhost',
   String  $irida_version        = '20.01.2', #release tags  https://github.com/phac-nml/irida/releases
   String  $war_url              = "https://github.com/phac-nml/irida/releases/download/${irida_version}/irida-${irida_version}.war",
@@ -98,6 +99,7 @@ class irida(
 
   class {'irida::web_server':
     irida_ip_addr        => $irida::irida_ip_addr,
+    irida_api_timeout    => $irida::irida_api_timeout,
     apache_use_ssl       => $irida::use_ssl,
     apache_force_ssl     => $irida::force_ssl,
     ssl_server_cert      => $irida::ssl_server_cert,
