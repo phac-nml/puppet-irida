@@ -38,7 +38,7 @@
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
 	<Location /<%= @irida_url_path %>>
-		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
+		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=<%= @irida_api_timeout %> timeout=<%= @irida_api_timeout %>
 	</Location>
 </VirtualHost>
 <% end %>
@@ -74,7 +74,7 @@
 	# REST API:
 	# IRIDA REST API (deployed to $TOMCAT_HOME/webapps/ as irida-web.war):
 	<Location /<%= @irida_url_path %>>
-		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=7200 timeout=7200
+		ProxyPass http://<%= @irida_ip_addr %>:8080/<%= @irida_url_path %> connectiontimeout=<%= @irida_api_timeout %> timeout=<%= @irida_api_timeout %>
 	</Location>
 <% end -%>
 </VirtualHost>
