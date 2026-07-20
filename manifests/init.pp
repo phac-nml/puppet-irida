@@ -302,7 +302,7 @@ class irida(
       exec { "mkdir_${dir}":
         command  => "mkdir -p ${dir}",
         provider => 'shell',
-        creates  => $dir,
+        unless   => "test -d ${dir}",
         user     => $irida::tomcat_user,
         require  => [Tomcat::Install[$tomcat_location],Tomcat::War["${irida_url_path}.war"],User[$tomcat_user]],
       }
