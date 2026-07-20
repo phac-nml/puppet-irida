@@ -12,6 +12,7 @@ class irida::web_server (
   String  $ssl_cert_private_key = '',
   String  $irida_ip_addr = $ipaddress,
   String  $irida_url_path = 'irida',
+  Integer $irida_api_timeout = 14400,
 ) {
 
   ensure_packages(['epel-release'], {'ensure' => 'present'})
